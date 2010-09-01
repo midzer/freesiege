@@ -113,7 +113,7 @@ void GameScreen::display_game(SDL_Surface *screen) {
 				switch (event.type) {
 				case SDL_KEYDOWN:
 					if (event.key.keysym.sym==SDLK_ESCAPE) quit_game=true;
-#ifndef FREESIEGE_ISINSTALLED
+#ifndef DEBUG_MODE
 					else if (event.key.keysym.sym==SDLK_t) life_bar2.damage(100); //DEBUG
 					else if (event.key.keysym.sym==SDLK_y) life_bar1.damage(100);
 #endif
