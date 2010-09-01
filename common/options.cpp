@@ -22,6 +22,8 @@ bool Options::sound = true;
 bool Options::fullscreen = false;
 bool Options::soundConfig = true;
 bool Options::fullscreenConfig = false;
+Keys Options::player1keys = Keys(P1_KEY_SELECT,P1_KEY_SWAP,P1_KEY_VALIDATE,P1_KEY_LEFT,P1_KEY_RIGHT,P1_KEY_DOWN,P1_KEY_UP);
+Keys Options::player2keys = Keys(P2_KEY_SELECT,P2_KEY_SWAP,P2_KEY_VALIDATE,P2_KEY_LEFT,P2_KEY_RIGHT,P2_KEY_DOWN,P2_KEY_UP);
 
 void Options::setSound(bool s) {
 	soundConfig=s;
@@ -54,8 +56,14 @@ void Options::save() {
 	string filename = config_file();
 	ofstream file(filename.c_str());
 	if (file) {
-		file << soundConfig;
-		file << fullscreenConfig;
+		file << "sound :" << soundConfig << endl;
+		file << "fullscreen :" << fullscreenConfig << endl;
+		for(int i=0;i<Keys::NBKEYS;i++) {
+			file << "p1 " << i << ":" << player1keys.keys[i] << endl;
+		}
+		for(int i=0;i<Keys::NBKEYS;i++) {
+			file << "p2 " << i << ":" << player2keys.keys[i] << endl;
+		}
 	} else {
 		cout << "impossible de sauvegarder le fichier de config (chemin : " << filename << ")" << endl;
 	}
@@ -65,9 +73,29 @@ void Options::load() {
 	string filename = string(config_file());
 	ifstream file(filename.c_str());
 	if(file) {
+		file.ignore(256,':');
 		file >> soundConfig;
+		file.ignore(256,':');
 		file >> fullscreenConfig;
-		cout << "d'après le fichier de config, sound =" << sound << " et fullscreen =" << fullscreen << endl;
+		int buffer;
+		for(int i=0; i<Keys::NBKEYS;i++) {
+			file.ignore(256,':');
+			file >> buffer;
+			player1keys.keys[i] = SDLKey(buffer);
+		}
+		if(file.eof()) {
+			player1keys = Keys(P1_KEY_SELECT,P1_KEY_SWAP,P1_KEY_VALIDATE,P1_KEY_LEFT,P1_KEY_RIGHT,P1_KEY_DOWN,P1_KEY_UP);
+		}
+		for(int i=0; i<Keys::NBKEYS;i++) {
+			file.ignore(256,':');
+			file >> buffer;
+			player2keys.keys[i] = SDLKey(buffer);
+		}
+		if(file.eof()) {
+			player2keys = Keys(P2_KEY_SELECT,P2_KEY_SWAP,P2_KEY_VALIDATE,P2_KEY_LEFT,P2_KEY_RIGHT,P2_KEY_DOWN,P2_KEY_UP);
+		}
+		
+		cout << "d'après le fichier de config, sound =" << soundConfig << " et fullscreen =" << fullscreenConfig << endl;
 	} else {
 		cout << "fichier de config \"" << config_file() << "\" inexistant, configuration par défaut appliquée" << endl;
 		soundConfig = true;

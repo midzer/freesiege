@@ -14,6 +14,35 @@
 #ifndef __OPTIONS_H
 #define __OPTIONS_H
 
+#include "config.h"
+
+class Keys {
+	public:
+		enum KEY {SELECT, SWAP, VALIDATE, LEFT, RIGHT, DOWN, UP, NBKEYS};
+		Keys(SDLKey se,SDLKey sw,SDLKey va,SDLKey le,SDLKey ri,SDLKey d,SDLKey up) {
+			keys[SELECT] = se;
+			keys[SWAP] = sw;
+			keys[VALIDATE] = va;
+			keys[LEFT] = le;
+			keys[RIGHT] = ri;
+			keys[DOWN] = d;
+			keys[UP]= up;
+		};
+		SDLKey keys[NBKEYS];
+		static std::string name(KEY key) {
+			switch(key) {
+				case SELECT: return "select";
+				case SWAP: return "swap";
+				case VALIDATE: return "validate";
+				case LEFT: return "left";
+				case RIGHT: return "right";
+				case DOWN: return "down";
+				case UP: return "up";
+				case NBKEYS: return "number of keys";
+			}
+		}
+};
+
 class Options {
 	public:
 		static void save();
@@ -24,6 +53,8 @@ class Options {
 		static void handleArguments(int argc, char* argv[]);
 		static bool fullscreenOn();
 		static bool soundOn();
+		static Keys player1keys;
+		static Keys player2keys;
 	private:
 		static bool soundConfig;		//what is in the config file
 		static bool fullscreenConfig;	//what is in the config file

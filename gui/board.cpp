@@ -17,48 +17,27 @@
 //
 #include "board.h"
 #include "param.h"
-
-#define P2_KEY_SELECT SDLK_o	//key used to select the first element
-#define P2_KEY_SWAP SDLK_o	//key used to select the second element and swap it with the first one
-#define P2_KEY_VALIDATE SDLK_p	//key used to validate combinaisons and to spawn units on the battlefield
-#define P2_KEY_LEFT SDLK_LEFT
-#define P2_KEY_RIGHT SDLK_RIGHT
-#define P2_KEY_DOWN SDLK_DOWN
-#define P2_KEY_UP SDLK_UP
-
-#ifdef WIN32
-	#define P1_KEY_SELECT SDLK_q	//key used to select the first element
-	#define P1_KEY_SWAP SDLK_q	//key used to select the second element and swap it with the first one
-	#define P1_KEY_VALIDATE SDLK_w	//key used to validate combinaisons and to spawn units on the battlefield
-#else
-	#define P1_KEY_SELECT SDLK_a	//key used to select the first element
-	#define P1_KEY_SWAP SDLK_a	//key used to select the second element and swap it with the first one
-	#define P1_KEY_VALIDATE SDLK_z	//key used to validate combinaisons and to spawn units on the battlefield
-#endif
-#define P1_KEY_LEFT SDLK_s
-#define P1_KEY_RIGHT SDLK_f
-#define P1_KEY_DOWN SDLK_d
-#define P1_KEY_UP SDLK_e
+#include "options.h"
 
 Board::Board(const SpriteCollection *spr_coll,const CombinaisonCollection *com_coll,BattleField *field,PLAYER player) {
 	//init player key context
 	this->player=player;
 	if (player==PLAYER_1) {
-		key_select=P1_KEY_SELECT;
-		key_swap=P1_KEY_SWAP;
-		key_validate=P1_KEY_VALIDATE;
-		key_left=P1_KEY_LEFT;
-		key_right=P1_KEY_RIGHT;
-		key_down=P1_KEY_DOWN;
-		key_up=P1_KEY_UP;
+		key_select=Options::player1keys.keys[Keys::SELECT];
+		key_swap=Options::player1keys.keys[Keys::SWAP];
+		key_validate=Options::player1keys.keys[Keys::VALIDATE];
+		key_left=Options::player1keys.keys[Keys::LEFT];
+		key_right=Options::player1keys.keys[Keys::RIGHT];
+		key_down=Options::player1keys.keys[Keys::DOWN];
+		key_up=Options::player1keys.keys[Keys::UP];
 	} else {
-		key_select=P2_KEY_SELECT;
-		key_swap=P2_KEY_SWAP;
-		key_validate=P2_KEY_VALIDATE;
-		key_left=P2_KEY_LEFT;
-		key_right=P2_KEY_RIGHT;
-		key_down=P2_KEY_DOWN;
-		key_up=P2_KEY_UP;
+		key_select=Options::player2keys.keys[Keys::SELECT];
+		key_swap=Options::player2keys.keys[Keys::SWAP];
+		key_validate=Options::player2keys.keys[Keys::VALIDATE];
+		key_left=Options::player2keys.keys[Keys::LEFT];
+		key_right=Options::player2keys.keys[Keys::RIGHT];
+		key_down=Options::player2keys.keys[Keys::DOWN];
+		key_up=Options::player2keys.keys[Keys::UP];
 	}	
 		
 	//init board randomly
@@ -265,6 +244,11 @@ void Board::logic() {
 			this->board[select_i][select_j]=dummy;
 			compute();
 			this->state=IDLE;
+			this->state_changed=true;
+		} else if (key[key_select] && !this->state_changed) {
+			this->select_i=this->cursor_i;
+			this->select_j=this->cursor_j;
+			this->state=SELECTED;
 			this->state_changed=true;
 		} else if (key[key_validate] && !this->state_changed) {
 			this->state=VALIDATE;

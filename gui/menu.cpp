@@ -19,13 +19,6 @@
 
 #include "param.h"
 
-#define MENU_Y 350
-#define MENU_SELECTED_H 55
-#define MENU_SELECTED_COLOR { 0x10, 0x10, 0x10, 0 }
-#define MENU_NORMAL_H 36
-#define MENU_NORMAL_COLOR { 0x00, 0x00, 0x00, 0 }
-#define MENU_SPACING 40
-
 Menu::Menu(const Titles &titles,const std::string &ttf_path,TextureIds ids) :ttf_path(ttf_path), ids(ids){
 
 	int n=0; float y=MENU_Y;

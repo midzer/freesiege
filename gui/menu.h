@@ -20,6 +20,13 @@
 
 #include "sprite.h"
 
+#define MENU_Y 350
+#define MENU_SELECTED_H 55
+#define MENU_SELECTED_COLOR { 0x10, 0x10, 0x10, 0 }
+#define MENU_NORMAL_H 36
+#define MENU_NORMAL_COLOR { 0x00, 0x00, 0x00, 0 }
+#define MENU_SPACING 40
+
 class Menu {
 public:
 	typedef std::vector<std::string> Titles;

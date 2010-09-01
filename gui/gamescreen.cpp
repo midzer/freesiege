@@ -23,7 +23,7 @@
 
 #define FONT_COLOR { 0x77, 0xd1, 0x00, 0 }
 
-GameScreen::GameScreen(const SpriteCollection *spr_coll,const CombinaisonCollection *cmb_coll,const std::string &ttf_path,TextureIds ids,Background *background) {
+GameScreen::GameScreen(const SpriteCollection *spr_coll,const CombinaisonCollection *cmb_coll,const std::string &ttf_path,TextureIds ids,Background *background,MusicCollection *music_coll) {
 	font=TTF_OpenFont(ttf_path.c_str(),80);
 	font_huge=TTF_OpenFont(ttf_path.c_str(),120);
 	font_tiny=TTF_OpenFont(ttf_path.c_str(),40);
@@ -49,6 +49,7 @@ GameScreen::GameScreen(const SpriteCollection *spr_coll,const CombinaisonCollect
 
 	this->spr_coll=spr_coll;
 	this->cmb_coll=cmb_coll;
+	this->music_coll=music_coll;
 	this->background=background;
 }
 
@@ -136,6 +137,10 @@ void GameScreen::display_game(SDL_Surface *screen) {
 
 			while (ticks>(SDL_GetTicks()-1000/FPS)) SDL_Delay(3);
 			ticks=SDL_GetTicks();
+			
+			if(!Mix_PlayingMusic()) {
+				music_coll->play_random_music();
+			}
 		}
 
 		//final screen

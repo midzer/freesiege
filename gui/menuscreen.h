@@ -32,12 +32,17 @@ public:
     enum AILEVEL {EASY,NORMAL,HARD,EXTREME};
     AILEVEL ai_level;
 private:
+	void show_message(std::string msg);
+	void refresh_key_menu();
+	
 	const SpriteCollection *spr_coll;
+	std::string ttf_path;
 	Menu *key_menu;
 	Menu *main_menu;
 	Menu *option_menu;
 	typedef std::stack<Menu*> Menus;
 	Menus menus;
+	TextureIds ids;
 };
 
 #endif

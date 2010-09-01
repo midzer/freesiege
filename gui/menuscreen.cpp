@@ -33,8 +33,12 @@
 #define HILL_SHIFT 30
 #define HILL_BIAS 50
 
-MenuScreen::MenuScreen(const SpriteCollection *spr_coll,const std::string &ttf_path,TextureIds ids) {
+using namespace std;
+
+MenuScreen::MenuScreen(const SpriteCollection *spr_coll,const string &ttf_path,TextureIds ids) {
 	this->spr_coll=spr_coll;
+	this->ttf_path=ttf_path;
+	this->ids=ids;
 
 	//main menu
 	Menu::Titles titles;
@@ -52,26 +56,46 @@ MenuScreen::MenuScreen(const SpriteCollection *spr_coll,const std::string &ttf_p
 	titles.push_back("AI Level: Knight");
 	titles.push_back("Keys");
 	titles.push_back(Options::soundOn()?"Sound: on":"Sound: off");
-	titles.push_back("Fullscreen");
+	titles.push_back(Options::fullscreenOn()?"Fullscreen":"Windowed");
 	titles.push_back("Return");
 	option_menu=new Menu(titles,ttf_path,&ids[0]);
 
-	titles.clear();
-	titles.push_back("select swap PI:a PII:o");
-	titles.push_back("validate PI:z PII:p");
-	titles.push_back("up PI:e PII:UP");
-	titles.push_back("down PI:d PII:DOWN");
-	titles.push_back("right PI:f PII:RIGHT");
-	titles.push_back("left PI:s PII:LEFT");
-	key_menu=new Menu(titles,ttf_path,&ids[20]);
-
+	key_menu=NULL;
+	refresh_key_menu();
+	
 	menus.push(main_menu);
+}
+
+void MenuScreen::refresh_key_menu() {
+	Menu::Titles titles;
+	for(int i=0;i<Keys::NBKEYS;i++) {
+		titles.push_back(Keys::name(Keys::KEY(i))+" PI:"+string(SDL_GetKeyName(Options::player1keys.keys[i]))+" PII:"+string(SDL_GetKeyName(Options::player2keys.keys[i])));
+	}
+	if(key_menu)
+		delete key_menu;
+	key_menu=new Menu(titles,ttf_path,&ids[20]);
 }
 
 MenuScreen::~MenuScreen() {
 	delete option_menu;
 	delete main_menu;
 	delete key_menu;
+}
+
+void MenuScreen::show_message(string msg) {
+	//font creation
+	TTF_Font *normal_font=TTF_OpenFont(ttf_path.c_str(),MENU_NORMAL_H);
+	if (!normal_font) {
+		std::cerr<<"font "<<ttf_path<<" creation failed..."<<std::endl;
+		return;
+	}
+	
+	SDL_Color normal_color=MENU_NORMAL_COLOR;
+	SDL_Surface *normal_surf;
+	normal_surf=TTF_RenderText_Solid(normal_font,msg.c_str(),normal_color);
+	Sprite* msgSprite = new Sprite(normal_surf,ids[30]);
+	msgSprite->draw((SCREEN_W-msgSprite->w)/2,MENU_Y);
+	TTF_CloseFont(normal_font);
 }
 
 bool MenuScreen::display_menu(SDL_Surface *screen,SELECTION &selection) {
@@ -89,6 +113,9 @@ bool MenuScreen::display_menu(SDL_Surface *screen,SELECTION &selection) {
 
 	SDL_Event event;
 	float shift=1.0;
+	bool waiting_key=false;
+	int current_player=0;
+	
 	while (true) {
 		Menu *current_menu=menus.top();
 		
@@ -101,112 +128,143 @@ bool MenuScreen::display_menu(SDL_Surface *screen,SELECTION &selection) {
 		shift-=D_SHIFT;
 		if (shift<0) shift=0;
 
+		
 		//draw_fadein(logo_sword,(SCREEN_W-logo_sword->w)/2,MENUSCREEN_BASE_Y-logo_sword->h/2-4,frame_count,MENUSCREEN_SWORD_FRAME_COUNT,30,4);
 		draw_fadein(logo_free,MENUSCREEN_BASE_X,MENUSCREEN_BASE_Y,frame_count,MENUSCREEN_FREE_FRAME_COUNT,MENUSCREEN_DELAY);
 		draw_fadein(logo_siege,SCREEN_W-logo_siege->w-MENUSCREEN_BASE_X,MENUSCREEN_BASE_Y,frame_count,MENUSCREEN_SIEGE_FRAME_COUNT,MENUSCREEN_DELAY);
-		current_menu->draw();
+		
+		if(waiting_key) {
+			show_message("Key "+Keys::name(Keys::KEY(current_menu->get_selected()->n))+" for player "+(current_player==0?"I":"II")+" ?");
+		} else
+			current_menu->draw();
 		SDL_GL_SwapBuffers();
 		SDL_Flip(screen);
-
+		
 		while (SDL_PollEvent(&event)) {
 			switch (event.type) {
-			case SDL_KEYDOWN:
-				switch (event.key.keysym.sym) {
-				case SDLK_ESCAPE:
-					if (!menus.empty()) menus.pop();
-					if (menus.empty()) {
-						selection=QUIT;
-						return true;
-					}
-					break;
-				case SDLK_RETURN:
-				case SDLK_SPACE:
-					if (current_menu==main_menu) {
-						switch (current_menu->get_selected()->n) {
-						case 0://2 players versus
-							selection=TWO_PLAYERS;
-							return false;
-							break;
-						case 1://training mode
-							selection=TRAINING;
-							return false;
-							break;
-						case 2://combinaisons
-							selection=COMBINAISONS;
-							return false;
-							break;
-						case 3://options
-							menus.push(option_menu);
-							break;
-						case 4://quit
-							selection=QUIT;
-							return true;
-							break;
-						default:
-							break;
-						}
-					} else if (current_menu==option_menu) {
-						switch (current_menu->get_selected()->n) {
-                        case 0://ai level
-                            switch (ai_level) {
-                              case EASY:
-                                ai_level=NORMAL;
-								current_menu->get_selected()->title="AI Level: Knight";
-                                break;
-                              case NORMAL:
-                                ai_level=HARD;
-								current_menu->get_selected()->title="AI Level: Galaad the Righteous";
-                                break;
-                              case HARD:
-                                ai_level=EXTREME;
-								current_menu->get_selected()->title="AI Level: Morgoth the Cruel";
-                                break;
-                              case EXTREME:
-                                ai_level=EASY;
-								current_menu->get_selected()->title="AI Level: Farmer";
-                                break; }
-                            break;
-						case 1://keys
-							menus.push(key_menu);
-							break;
-						case 2://Sound
-							if (!Options::soundOn())
-							{
-								Mix_ResumeMusic();
-								Options::setSound(true);
-								current_menu->get_selected()->title="Sound: on";
-							}
-							else
-							{
-								Mix_PauseMusic();
-								Options::setSound(false);
-								current_menu->get_selected()->title="Sound: off";
-							}
-							break;
-						case 4://return
+				case SDL_KEYDOWN:
+					if(waiting_key) {
+						if(current_player==0) {
+							Options::player1keys.keys[current_menu->get_selected()->n] = event.key.keysym.sym;
+							current_player++;
+						} else {
+							Options::player2keys.keys[current_menu->get_selected()->n] = event.key.keysym.sym;
+							current_player=0;
+							waiting_key=false;
+							refresh_key_menu();
 							menus.pop();
-							break;
-						default:
-							break;
+							menus.push(key_menu);
 						}
-					} else if (current_menu==key_menu) {
-					}
+					} else
+						switch (event.key.keysym.sym) {
+							case SDLK_ESCAPE:
+								if (!menus.empty()) menus.pop();
+								if (menus.empty()) {
+									selection=QUIT;
+									return true;
+								}
+								break;
+							case SDLK_RETURN:
+							case SDLK_SPACE:
+								if (current_menu==main_menu) {
+									switch (current_menu->get_selected()->n) {
+									case 0://2 players versus
+										selection=TWO_PLAYERS;
+										return false;
+										break;
+									case 1://training mode
+										selection=TRAINING;
+										return false;
+										break;
+									case 2://combinaisons
+										selection=COMBINAISONS;
+										return false;
+										break;
+									case 3://options
+										menus.push(option_menu);
+										break;
+									case 4://quit
+										selection=QUIT;
+										return true;
+										break;
+									default:
+										break;
+									}
+								} else if (current_menu==option_menu) {
+									switch (current_menu->get_selected()->n) {
+									case 0://ai level
+										switch (ai_level) {
+										  case EASY:
+											ai_level=NORMAL;
+											current_menu->get_selected()->title="AI Level: Knight";
+											break;
+										  case NORMAL:
+											ai_level=HARD;
+											current_menu->get_selected()->title="AI Level: Galaad the Righteous";
+											break;
+										  case HARD:
+											ai_level=EXTREME;
+											current_menu->get_selected()->title="AI Level: Morgoth the Cruel";
+											break;
+										  case EXTREME:
+											ai_level=EASY;
+											current_menu->get_selected()->title="AI Level: Farmer";
+											break; }
+										break;
+									case 1://keys
+										menus.push(key_menu);
+										break;
+									case 2://Sound
+										if (!Options::soundOn())
+										{
+											Mix_ResumeMusic();
+											Options::setSound(true);
+											current_menu->get_selected()->title="Sound: on";
+										}
+										else
+										{
+											Mix_PauseMusic();
+											Options::setSound(false);
+											current_menu->get_selected()->title="Sound: off";
+										}
+										break;
+									case 3://Fullscreen
+										if (!Options::fullscreenOn())
+										{
+											Options::setFullscreen(true);
+											current_menu->get_selected()->title="Fullscreen";
+										}
+										else
+										{
+											Options::setFullscreen(false);
+											current_menu->get_selected()->title="Windowed";
+										}
+										break;
+									case 4://return
+										menus.pop();
+										break;
+									default:
+										break;
+									}
+								} else if (current_menu==key_menu) {
+									waiting_key=true;
+								}
+								break;
+							case SDLK_UP:
+								current_menu->previous();
+								break;
+							case SDLK_DOWN:
+								current_menu->next();
+								break;
+							default:
+								break;
+						}
 					break;
-				case SDLK_UP:
-					current_menu->previous();
-					break;
-				case SDLK_DOWN:
-					current_menu->next();
+				case SDL_QUIT:			
+					return true;
 					break;
 				default:
 					break;
-				}
-				break;
-			case SDL_QUIT:			
-				return true;
-				break;
-			default:
-				break;
 			}
 		}
 

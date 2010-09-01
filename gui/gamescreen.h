@@ -20,15 +20,17 @@
 
 #include "background.h"
 #include "combinaisoncollection.h"
+#include "musiccollection.h"
 
 class GameScreen {
 public:
-	GameScreen(const SpriteCollection *spr_coll,const CombinaisonCollection *cmb_coll,const std::string &ttf_path,TextureIds ids,Background *background);
+	GameScreen(const SpriteCollection *spr_coll,const CombinaisonCollection *cmb_coll,const std::string &ttf_path,TextureIds ids,Background *background,MusicCollection *music_coll);
 	~GameScreen();
 	void display_game(SDL_Surface *screen);
 private:
 	const SpriteCollection *spr_coll;
 	const CombinaisonCollection *cmb_coll;
+	MusicCollection *music_coll;
 	Background *background;
 
 	TTF_Font *font;

@@ -86,7 +86,7 @@ void MusicCollection::play_random_music() {
    }
    //std::cout<<"playing "<<iter->first<<std::endl;
 
-   Mix_PlayMusic(iter->second,-1);
+   Mix_PlayMusic(iter->second,1);
 }
 
 std::ostream &operator<<(std::ostream &os,const MusicCollection &collection) {

@@ -98,8 +98,8 @@ int main(int argc, char* argv[]) {
 	
     const std::string font_name="Swift.ttf";
 	Background background(&spr_coll);
-	TrainingScreen training_screen(&spr_coll,&cmb_coll,base_dir+font_name,&texture_ids[350],&background);
-	GameScreen game_screen(&spr_coll,&cmb_coll,base_dir+font_name,&texture_ids[200],&background);
+	TrainingScreen training_screen(&spr_coll,&cmb_coll,base_dir+font_name,&texture_ids[350],&background,&music_coll);
+	GameScreen game_screen(&spr_coll,&cmb_coll,base_dir+font_name,&texture_ids[200],&background,&music_coll);
 	CombinaisonScreen combi_screen(&spr_coll,&cmb_coll,base_dir+font_name,&texture_ids[250]);
 	MenuScreen menu_screen(&spr_coll,base_dir+font_name,&texture_ids[300]);
 

@@ -51,4 +51,28 @@ typedef TextureId* TextureIds;
 	#include <GL/gl.h>
 #endif
 
+
+
+#define P2_KEY_SELECT SDLK_o	//key used to select the first element
+#define P2_KEY_SWAP SDLK_o	//key used to select the second element and swap it with the first one
+#define P2_KEY_VALIDATE SDLK_p	//key used to validate combinaisons and to spawn units on the battlefield
+#define P2_KEY_LEFT SDLK_LEFT
+#define P2_KEY_RIGHT SDLK_RIGHT
+#define P2_KEY_DOWN SDLK_DOWN
+#define P2_KEY_UP SDLK_UP
+
+#ifdef WIN32
+	#define P1_KEY_SELECT SDLK_q	//key used to select the first element
+	#define P1_KEY_SWAP SDLK_q	//key used to select the second element and swap it with the first one
+	#define P1_KEY_VALIDATE SDLK_w	//key used to validate combinaisons and to spawn units on the battlefield
+#else
+	#define P1_KEY_SELECT SDLK_a	//key used to select the first element
+	#define P1_KEY_SWAP SDLK_a	//key used to select the second element and swap it with the first one
+	#define P1_KEY_VALIDATE SDLK_z	//key used to validate combinaisons and to spawn units on the battlefield
+#endif
+#define P1_KEY_LEFT SDLK_s
+#define P1_KEY_RIGHT SDLK_f
+#define P1_KEY_DOWN SDLK_d
+#define P1_KEY_UP SDLK_e
+
 #endif
