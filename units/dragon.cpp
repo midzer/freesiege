@@ -22,8 +22,10 @@
 #include "utils.h"
 
 Dragon::Dragon(const SpriteCollection *spr_coll,PLAYER player): Unit(player) {
-	w=W;
-	h=H;
+
+	anim_dragon_fly=spr_coll->get_anim_cycle_iterator("dragon_fly",0.175);
+	w=anim_dragon_fly.get_next_bitmap()->w;
+	h=anim_dragon_fly.get_next_bitmap()->h;
 
 	float f=factor(0.8);
 	if (player==PLAYER_1) {
@@ -34,8 +36,6 @@ Dragon::Dragon(const SpriteCollection *spr_coll,PLAYER player): Unit(player) {
 		dx=-f*DX;
 	}
 	y=BattleField::BaseY-Y;
-
-	anim_dragon_fly=spr_coll->get_anim_cycle_iterator("dragon_fly",0.175);
 	bit_dragon_dead=spr_coll->get_sprite("dragon_cadaver");
 
 	state=FLY;
@@ -62,7 +62,7 @@ void Dragon::post_message(MessageQueue *mess_queue) {
 
 		break;
 	case CADAVER:
-		if (y<BattleField::BaseY-H) { y+=5; x+=dx; }
+		if (y<BattleField::BaseY-h) { y+=5; x+=dx; }
 		break;
 	}
 }

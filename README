@@ -30,6 +30,30 @@ http://opengameart.org/content/chain-tiles
 Following files are under GPLv2 : 
 #	new file:   anims/final_screen/echec00.bmp
 #	new file:   anims/final_screen/success00.bmp
+#	modified:   anims/dragon/fly00.bmp
+#	modified:   anims/dragon/fly01.bmp
+#	modified:   anims/dragon/fly02.bmp
+#	modified:   anims/dragon/fly03.bmp
+#	modified:   anims/golem/fight00.bmp
+#	modified:   anims/golem/fight01.bmp
+#	modified:   anims/golem/fight02.bmp
+#	deleted:    anims/golem/fight03.bmp
+#	deleted:    anims/golem/fight04.bmp
+#	modified:   anims/golem/walk00.bmp
+#	modified:   anims/golem/walk01.bmp
+#	deleted:    anims/golem/walk02.bmp
+#	deleted:    anims/golem/walk03.bmp
+#	deleted:    anims/golem/walk04.bmp
+#	deleted:    anims/golem/walk05.bmp
+#	modified:   anims/plant/fight00.bmp
+#	modified:   anims/plant/fight01.bmp
+#	modified:   anims/plant/fight02.bmp
+#	modified:   anims/plant/fight03.bmp
+#	modified:   sprites/lifebar_border.bmp
+#	modified:   sprites/units/druid.bmp
+#	modified:   sprites/units/plant.bmp
+#	modified:   sprites/units/plant_dead.bmp
+
 #	modified:   sprites/dragon.bmp
 #	modified:   sprites/druid.bmp
 #	modified:   sprites/fire.bmp
@@ -83,6 +107,27 @@ The following images are from Battle for Wesnoth :
 -xcf/ruffian.png
 -xcf/shekkahan.png
 -xcf/stone-large.png
+#	modified:   anims/dragon/fly00.bmp
+#	modified:   anims/dragon/fly01.bmp
+#	modified:   anims/dragon/fly02.bmp
+#	modified:   anims/dragon/fly03.bmp
+#	modified:   anims/golem/fight00.bmp
+#	modified:   anims/golem/fight01.bmp
+#	modified:   anims/golem/fight02.bmp
+#	deleted:    anims/golem/fight03.bmp
+#	deleted:    anims/golem/fight04.bmp
+#	modified:   anims/golem/walk00.bmp
+#	modified:   anims/golem/walk01.bmp
+#	deleted:    anims/golem/walk02.bmp
+#	deleted:    anims/golem/walk03.bmp
+#	deleted:    anims/golem/walk04.bmp
+#	deleted:    anims/golem/walk05.bmp
+#	modified:   anims/plant/fight00.bmp
+#	modified:   anims/plant/fight01.bmp
+#	modified:   anims/plant/fight02.bmp
+#	modified:   anims/plant/fight03.bmp
+#	modified:   sprites/dragon.bmp
+#	modified:   sprites/druid.bmp
 
 The image sprite/veteran.bmp is under GPLv2, from here : http://opengameart.org/content/imperial-guard
 Its source is in xcf/veteran.xcf

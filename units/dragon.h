@@ -32,8 +32,6 @@ public:
     static const float Life=200;
     static const float PlayerDamage=6;
     static const float Y=180; 
-    static const float W=174;
-    static const float H=58;
     static const float DX=1;
 private:
 	typedef enum {FLY,CADAVER} State;
