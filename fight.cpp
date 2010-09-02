@@ -77,6 +77,7 @@ int main(int argc, char* argv[]) {
 		background.draw();
 		life_bar1.draw();
 		life_bar2.draw();
+		battlefield.refresh();
 		battlefield.draw();
 		foreground.draw();
 		SDL_GL_SwapBuffers();	

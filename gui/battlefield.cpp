@@ -81,7 +81,7 @@ int BattleField::get_nonplant_unit_count(PLAYER player)
     return count;
 }
 
-void BattleField::draw() {
+void BattleField::refresh() {
 	if (++frame_skip_count>FIELD_UPDATE_FRAME_SKIP) {
 		//post collision event
 		CollisionMatrix coll_matrix(units);
@@ -133,6 +133,9 @@ void BattleField::draw() {
 		}
 		
 	}
+}
+
+void BattleField::draw() {
 	//draw
 	for (Units::const_iterator iter=units.begin(); iter!=units.end(); iter++) (*iter)->draw();
 

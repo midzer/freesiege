@@ -20,6 +20,7 @@
 #include "board.h"
 #include "utils.h"
 #include "param.h"
+#include "options.h"
 
 #define FONT_COLOR { 0x77, 0xd1, 0x00, 0 }
 
@@ -46,6 +47,7 @@ GameScreen::GameScreen(const SpriteCollection *spr_coll,const CombinaisonCollect
 	SDL_FreeSurface(text_key_help_surf);
 
 	score_id=ids[3];
+	pause_id=ids[4];
 
 	this->spr_coll=spr_coll;
 	this->cmb_coll=cmb_coll;
@@ -77,9 +79,15 @@ void GameScreen::display_game(SDL_Surface *screen) {
 	int p2_win=0;
 
 	bool quit_game=false;
+	bool paused=false;
+	
 	SDL_Event event;
 	SDL_Color color=FONT_COLOR;
 	Uint32 ticks=SDL_GetTicks();
+	
+	SDL_Surface *pause_surf=TTF_RenderText_Solid(font,"GAME PAUSED",color);
+	Sprite pause_sprite(pause_surf,pause_id);
+	SDL_FreeSurface(pause_surf);
 
 	while (!quit_game) {
 		//game object init
@@ -91,7 +99,8 @@ void GameScreen::display_game(SDL_Surface *screen) {
 		BattleField battlefield(spr_coll,&life_bar1,&life_bar2,&foreground);
 		Board board1(spr_coll,cmb_coll,&battlefield,PLAYER_1);
 		Board board2(spr_coll,cmb_coll,&battlefield,PLAYER_2);
-		
+				
+
 		//main loop
 		while (!quit && !quit_game) {
 			//draw
@@ -99,25 +108,34 @@ void GameScreen::display_game(SDL_Surface *screen) {
 			background->draw();
 			life_bar1.draw();
 			life_bar2.draw();
+			if(!paused)
+				battlefield.refresh();
 			battlefield.draw();
 			board1.draw();
 			board2.draw();
 			foreground.draw();
+			if(paused) {
+				fill_rect_opengl(0,0,SCREEN_W,SCREEN_H,0,0,0,0.7);
+				pause_sprite.draw((SCREEN_W-pause_sprite.w)/2,(SCREEN_H-pause_sprite.h)/2);
+			}
 			SDL_GL_SwapBuffers();	
 			SDL_Flip(screen);
 			
-			//logic
-			board1.logic();
-			board2.logic();
+			if(!paused) {
+				//logic
+				board1.logic();
+				board2.logic();
+			}
 			
 			while (SDL_PollEvent(&event)) {
 				switch (event.type) {
 				case SDL_KEYDOWN:
 					if (event.key.keysym.sym==SDLK_ESCAPE) quit_game=true;
-#ifndef DEBUG_MODE
+#ifdef DEBUG_MODE
 					else if (event.key.keysym.sym==SDLK_t) life_bar2.damage(100); //DEBUG
 					else if (event.key.keysym.sym==SDLK_y) life_bar1.damage(100);
 #endif
+					else if (event.key.keysym.sym==Options::pause_key) paused=!paused;
 					break;
 				case SDL_QUIT:			
 					quit_game=true;
@@ -170,6 +188,7 @@ void GameScreen::display_game(SDL_Surface *screen) {
 			background->draw();
 			life_bar1.draw();
 			life_bar2.draw();
+			battlefield.refresh();
 			battlefield.draw();
 			board1.draw();
 			board2.draw();

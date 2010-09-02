@@ -55,6 +55,7 @@ class Options {
 		static bool soundOn();
 		static Keys player1keys;
 		static Keys player2keys;
+		static SDLKey pause_key;
 	private:
 		static bool soundConfig;		//what is in the config file
 		static bool fullscreenConfig;	//what is in the config file

@@ -22,6 +22,7 @@
 #include "utils.h"
 #include "param.h"
 #include "plant.h"
+#include "options.h"
 
 #define FONT_COLOR { 0x77, 0xd1, 0x00, 0 }
 #define SURVIVAL_TIME 3000
@@ -95,9 +96,14 @@ void TrainingScreen::display_game(SDL_Surface *screen) {
     level=1;
 
 	bool quit_game=false;
+	bool paused=false;
 	SDL_Event event;
 	SDL_Color color=FONT_COLOR;
 	Uint32 ticks=SDL_GetTicks();
+		
+	SDL_Surface *pause_surf=TTF_RenderText_Solid(font,"GAME PAUSED",color);
+	Sprite pause_sprite(pause_surf,pause_id);
+	SDL_FreeSurface(pause_surf);
 
 	while (!quit_game) {
 		//game object init
@@ -109,6 +115,7 @@ void TrainingScreen::display_game(SDL_Surface *screen) {
 		Foreground foreground(spr_coll);
 		BattleField battlefield(spr_coll,&life_bar1,&life_bar2,&foreground);
 		Board board1(spr_coll,cmb_coll,&battlefield,PLAYER_1);
+		
 		//main loop
 		while (!quit && !quit_game) {
 			//draw
@@ -116,23 +123,32 @@ void TrainingScreen::display_game(SDL_Surface *screen) {
 			background->draw();
 			life_bar1.draw();
 			life_bar2.draw();
+			if(!paused)
+				battlefield.refresh();
 			battlefield.draw();
 			board1.draw();
 			foreground.draw();
+			if(paused) {
+				fill_rect_opengl(0,0,SCREEN_W,SCREEN_H,0,0,0,0.7);
+				pause_sprite.draw((SCREEN_W-pause_sprite.w)/2,(SCREEN_H-pause_sprite.h)/2);
+			}
 			SDL_GL_SwapBuffers();	
 			SDL_Flip(screen);
 			
-			//logic
-			board1.logic();
+			if(!paused) {
+				//logic
+				board1.logic();
+			}
 			
 			while (SDL_PollEvent(&event)) {
 				switch (event.type) {
 				case SDL_KEYDOWN:
 					if (event.key.keysym.sym==SDLK_ESCAPE) quit_game=true;
-#ifndef DEBUG_MODE
+#ifdef DEBUG_MODE
 					else if (event.key.keysym.sym==SDLK_t) life_bar2.damage(100); //DEBUG
 					else if (event.key.keysym.sym==SDLK_y) life_bar1.damage(100);
 #endif
+					else if (event.key.keysym.sym==Options::pause_key) paused=!paused;
 					break;
 				case SDL_QUIT:			
 					quit_game=true;
@@ -142,29 +158,30 @@ void TrainingScreen::display_game(SDL_Surface *screen) {
 				}
 			}
             //Spawn computer units
-            if (play_ticks < SURVIVAL_TIME) { //you win if you survived
-                if (not foreground.p2_flower or ticks%4==0) //the flower randomly slows the computer
-                  {
-                    int soldier_tics=(base_speed * std::pow(0.9,level-1));
-                    if (play_ticks%soldier_tics==0)
-                        battlefield.spawn(SOLDIER,PLAYER_2);
-                    if (play_ticks%(soldier_tics*6)==0)
-                        battlefield.spawn(KNIGHT,PLAYER_2);
-                    if (play_ticks%(soldier_tics*7)==0)
-                        battlefield.spawn(VETERAN,PLAYER_2);
-                    if (play_ticks%(soldier_tics*20)==0)
-                        battlefield.spawn(PLANT,PLAYER_2);
-                    if (play_ticks%(soldier_tics*24)==0)
-                        battlefield.spawn(GOLEM,PLAYER_2);
-                    if (play_ticks%(soldier_tics*22)==0)
-                        battlefield.spawn(DRAGON,PLAYER_2);
-                  }
-            }
-            else if (battlefield.get_nonplant_unit_count(PLAYER_2) == 0)
-              {
-                winner=PLAYER_1;
-                quit=true;
-              }
+            if(!paused)
+				if (play_ticks < SURVIVAL_TIME) { //you win if you survived
+					if (not foreground.p2_flower or ticks%4==0) //the flower randomly slows the computer
+					  {
+						int soldier_tics=(base_speed * std::pow(0.9,level-1));
+						if (play_ticks%soldier_tics==0)
+							battlefield.spawn(SOLDIER,PLAYER_2);
+						if (play_ticks%(soldier_tics*6)==0)
+							battlefield.spawn(KNIGHT,PLAYER_2);
+						if (play_ticks%(soldier_tics*7)==0)
+							battlefield.spawn(VETERAN,PLAYER_2);
+						if (play_ticks%(soldier_tics*20)==0)
+							battlefield.spawn(PLANT,PLAYER_2);
+						if (play_ticks%(soldier_tics*24)==0)
+							battlefield.spawn(GOLEM,PLAYER_2);
+						if (play_ticks%(soldier_tics*22)==0)
+							battlefield.spawn(DRAGON,PLAYER_2);
+					  }
+				}
+				else if (battlefield.get_nonplant_unit_count(PLAYER_2) == 0)
+				  {
+					winner=PLAYER_1;
+					quit=true;
+				  }
 
 			if (life_bar1.get_life()<=0) {
 				winner=PLAYER_2;
@@ -219,6 +236,7 @@ void TrainingScreen::display_game(SDL_Surface *screen) {
 			background->draw();
 			life_bar1.draw();
 			life_bar2.draw();
+			battlefield.refresh();
 			battlefield.draw();
 			board1.draw();
 			foreground.draw();

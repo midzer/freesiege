@@ -43,6 +43,7 @@ private:
 	Anim::CycleIterator skull;
 	Anim::CycleIterator hand;
 	TextureId score_id;
+	TextureId pause_id;
 };
 
 #endif

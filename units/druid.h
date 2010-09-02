@@ -29,7 +29,7 @@ public:
 	virtual void draw();
 
     static const float X=2;
-    static const float Y=90;
+    static const float Y=80;
 private:
 	typedef enum {INIT,WAIT,SHOOTED} State;
 	State state;

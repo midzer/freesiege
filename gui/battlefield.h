@@ -26,6 +26,7 @@ public:
 	BattleField(const SpriteCollection *spr_coll,LifeBar *lifebar1,LifeBar *lifebar2,Foreground * foreground);
 	~BattleField();
 	
+	void refresh();
 	void draw();
 	void spawn(UNIT_ID name,PLAYER player,float x=0);
 

@@ -84,7 +84,10 @@ void Menu::draw() {
 	for (TitleSprites::const_iterator iter=title_sprites.begin(); iter!=title_sprites.end(); iter++) {
 		Sprite *spr_current;
 		if (iter!=selected) spr_current=(*iter)->spr_normal;
-		else spr_current=(*iter)->spr_selected;
+		else {
+			spr_current=(*iter)->spr_selected;
+			fill_rect_opengl((SCREEN_W-spr_current->w)/2-5,(*iter)->y-spr_current->h/2,spr_current->w+10,spr_current->h-5,1,1,1,0.7);
+		}
 		spr_current->draw((SCREEN_W-spr_current->w)/2,(*iter)->y-spr_current->h/2);
 	}
 }

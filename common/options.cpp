@@ -24,6 +24,7 @@ bool Options::soundConfig = true;
 bool Options::fullscreenConfig = false;
 Keys Options::player1keys = Keys(P1_KEY_SELECT,P1_KEY_SWAP,P1_KEY_VALIDATE,P1_KEY_LEFT,P1_KEY_RIGHT,P1_KEY_DOWN,P1_KEY_UP);
 Keys Options::player2keys = Keys(P2_KEY_SELECT,P2_KEY_SWAP,P2_KEY_VALIDATE,P2_KEY_LEFT,P2_KEY_RIGHT,P2_KEY_DOWN,P2_KEY_UP);
+SDLKey Options::pause_key = SDLK_SPACE;
 
 void Options::setSound(bool s) {
 	soundConfig=s;
@@ -59,11 +60,12 @@ void Options::save() {
 		file << "sound :" << soundConfig << endl;
 		file << "fullscreen :" << fullscreenConfig << endl;
 		for(int i=0;i<Keys::NBKEYS;i++) {
-			file << "p1 " << i << ":" << player1keys.keys[i] << endl;
+			file << "p1 " << Keys::name(Keys::KEY(i)) << " \t:" << player1keys.keys[i] << endl;
 		}
 		for(int i=0;i<Keys::NBKEYS;i++) {
-			file << "p2 " << i << ":" << player2keys.keys[i] << endl;
+			file << "p2 " << Keys::name(Keys::KEY(i)) << " \t:" << player2keys.keys[i] << endl;
 		}
+		file << "pause :" << pause_key << endl;
 	} else {
 		cout << "impossible de sauvegarder le fichier de config (chemin : " << filename << ")" << endl;
 	}
@@ -94,6 +96,11 @@ void Options::load() {
 		if(file.eof()) {
 			player2keys = Keys(P2_KEY_SELECT,P2_KEY_SWAP,P2_KEY_VALIDATE,P2_KEY_LEFT,P2_KEY_RIGHT,P2_KEY_DOWN,P2_KEY_UP);
 		}
+		file.ignore(256,':');
+		file >> buffer;
+		pause_key = SDLKey(buffer);
+		if(file.eof())
+			pause_key = SDLK_SPACE;
 		
 		cout << "d'après le fichier de config, sound =" << soundConfig << " et fullscreen =" << fullscreenConfig << endl;
 	} else {
