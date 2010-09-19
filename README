@@ -7,15 +7,15 @@ Following files are under both GPLv2+ and CC-BY-SA, copyrighted Côme BERNIGAUD 
 #	modified:   sprites/units/druid.bmp
 #	modified:   sprites/select.bmp
 #	modified:   xcf/druid_unit.xcf
-#	modified:   sprites/title/free.bmp
-#	modified:   sprites/title/siege.bmp
+#	modified:   sprites/title/free.png
+#	modified:   sprites/title/siege.png
 #	xcf/free.xcf
 #	xcf/siege.xcf
-#	modified:   sprites/title/foreground.bmp
+#	modified:   sprites/title/foreground.png
 
 Following files are under both GPLv2+ and CC-BY-SA, copyrighted Grégoire BERNIGAUD :
-#	modified:   sprites/title/castle.bmp
-#	modified:   sprites/castle.bmp
+#	modified:   sprites/title/castle.png
+#	modified:   sprites/castle.png
 #	xcf/castle.png
 #	modified:   xcf/castle.xcf
 Based on these files by tidbit:
@@ -28,7 +28,7 @@ http://opengameart.org/content/chain-tiles
 
 
 Following files are under GPLv2 : 
-#	new file:   anims/final_screen/echec00.bmp
+#	new file:   anims/final_screen/echec00.png
 #	new file:   anims/final_screen/success00.bmp
 #	modified:   anims/dragon/fly00.bmp
 #	modified:   anims/dragon/fly01.bmp
@@ -62,7 +62,7 @@ Following files are under GPLv2 :
 #	modified:   sprites/soldier.bmp
 #	modified:   sprites/steel.bmp
 #	modified:   sprites/units/ball.bmp
-#	modified:   sprites/units/flame.bmp
+#	modified:   sprites/units/flame.png
 #	modified:   sprites/veteran.bmp
 #	modified:   sprites/wood.bmp
 sprites/plant.bmp
@@ -90,10 +90,8 @@ Sources are here :
 
 http://opengameart.org/content/magic-and-mechanic-game-interface-icons for backgrounds and wood/fire/steel/magic icons
 
-The following file is waiting to be licensed, please don't redistribue it before the problem is solved (it use both LGPL and CC-BY-SA sources, which aren't mixable)
-#	modified:   sprites/marion.bmp
-
 The following files are under CC-BY-SA:
+#	modified:   sprites/marion.bmp
 #	new file:   xcf/Cosmos_bipinnatus_06_ies.jpg
 #	modified:   sprites/units/flower.bmp
 source : http://commons.wikimedia.org/wiki/File:Cosmos_bipinnatus_06_ies.jpg

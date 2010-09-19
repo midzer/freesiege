@@ -55,6 +55,7 @@ protected:
 	Sprite *bit_magic;
 	Sprite *bit_fire;
 	Sprite *bit_cursor;
+	Sprite *frame;
 
 	void compute();
 	void compute_match();

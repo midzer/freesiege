@@ -67,6 +67,7 @@ Board::Board(const SpriteCollection *spr_coll,const CombinaisonCollection *com_c
 	this->bit_magic=spr_coll->get_sprite("magic");
 	this->bit_fire=spr_coll->get_sprite("fire");
 	this->bit_cursor=spr_coll->get_sprite("cursor");
+	this->frame=spr_coll->get_sprite("frame");
 	this->cursor_i=0;
 	this->cursor_j=0;
 	this->select_i=-1;
@@ -118,6 +119,7 @@ void Board::draw_background(float offset) {
 	//draw elements
 	float x,y;
 	y=SPACING/2+BOARD_BORDER;
+	frame->draw(offset,BOARD_BORDER+3*ELEM_H+3*SPACING);
 	for (int i=0;i<BOARD_H;i++) {
 		x=SPACING/2+offset;
 		for (int j=0;j<BOARD_W;j++) {
@@ -275,7 +277,7 @@ void Board::draw() {
 	
 	int offset;
 	if (player==PLAYER_1) offset=BOARD_BORDER;
-	else offset=SCREEN_W-BOARD_W*(ELEM_H+SPACING)-SPACING-BOARD_BORDER;
+	else offset=SCREEN_W-BOARD_W*(ELEM_H+SPACING)-BOARD_BORDER;
 	
 	draw_background(offset);
 	bit_cursor->draw(offset+this->cursor_j*(ELEM_W+SPACING),BOARD_BORDER+this->cursor_i*(ELEM_H+SPACING));
