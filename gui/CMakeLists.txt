@@ -10,7 +10,6 @@ SET(FS_GUI_SRCS
     gui/boardsurvivor.cpp
     gui/menu.cpp
     gui/gamescreen.cpp
-    gui/trainingscreen.cpp
     gui/menuscreen.cpp
     gui/combinaisonscreen.cpp
 )

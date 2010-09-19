@@ -43,6 +43,8 @@ int main(int argc, char* argv[]) {
 		std::cerr<<"sdl init failed..."<<SDL_GetError()<<std::endl;
 		return 1;
 	}
+	
+	IMG_Init(IMG_INIT_PNG);
 
 	std::cout<<"init video"<<std::endl;
 	screen=SDL_SetVideoMode(SCREEN_W,SCREEN_H,SCREEN_DEPTH,SDL_OPENGL|SDL_DOUBLEBUF);
@@ -159,6 +161,8 @@ int main(int argc, char* argv[]) {
 
 	SDL_RemoveTimer(counter_reset_id);
 	SDL_DestroyMutex(counter_reset_mutex);
+
+	IMG_Quit();
 
 	SDL_Quit();
 	return 0;

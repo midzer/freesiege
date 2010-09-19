@@ -18,7 +18,6 @@
 
 #include "utils.h"
 #include "param.h"
-#include "trainingscreen.h"
 #include "gamescreen.h"
 #include "menuscreen.h"
 #include "combinaisonscreen.h"
@@ -63,6 +62,8 @@ int main(int argc, char* argv[]) {
 		std::cerr<<"sdl init failed..."<<SDL_GetError()<<std::endl;
 		return 1;
 	}
+	
+	IMG_Init(IMG_INIT_PNG);
 
 	if (Options::fullscreenOn()) screen=SDL_SetVideoMode(SCREEN_W,SCREEN_H,SCREEN_DEPTH,SDL_OPENGL|SDL_DOUBLEBUF|SDL_FULLSCREEN);
 	else screen=SDL_SetVideoMode(SCREEN_W,SCREEN_H,SCREEN_DEPTH,SDL_OPENGL|SDL_DOUBLEBUF);
@@ -132,6 +133,7 @@ int main(int argc, char* argv[]) {
 
 	Options::save();
 	TTF_Quit();
+	IMG_Quit();
 	SDL_Quit();
 	return 0;
 }

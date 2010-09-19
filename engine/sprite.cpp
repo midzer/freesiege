@@ -16,6 +16,7 @@
 //	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 #include "sprite.h"
+#include <SDL_image.h>
 
 //helper function
 int nearest_power(int number) {
@@ -52,8 +53,7 @@ Sprite::Sprite(SDL_Surface *surf,TextureId id) {
 				iter[1]=0;
 				iter[0]=0;
 			} else {
-				if (*int_pixel==transparent) iter[3]=0x00;  //alpha
-				else iter[3]=0xff;
+				iter[3]=(*int_pixel & surf->format->Amask)>>surf->format->Ashift;
 				iter[2]=(*int_pixel & surf->format->Bmask)>>surf->format->Bshift;
 				iter[1]=(*int_pixel & surf->format->Gmask)>>surf->format->Gshift;
 				iter[0]=(*int_pixel & surf->format->Rmask)>>surf->format->Rshift;
@@ -174,16 +174,18 @@ void fill_rect_opengl(float x,float y,float w,float h,float r,float g,float b,fl
 }
 
 SDL_Surface *load_surface(const std::string &filename) {
-	SDL_Surface *load_surf=SDL_LoadBMP(filename.c_str());
+	SDL_Surface *load_surf=IMG_Load(filename.c_str());
 	if (!load_surf) return NULL;
 
-	//SDL_SetColorKey(load_surf,SDL_SRCCOLORKEY|SDL_RLEACCEL,SDL_MapRGB(load_surf->format,0xff,0x00,0xff));
+	SDL_SetColorKey(load_surf,SDL_SRCCOLORKEY|SDL_RLEACCEL,SDL_MapRGB(load_surf->format,0xff,0x00,0xff));
+	//~ SDL_SetAlpha(load_surf, SDL_SRCALPHA|SDL_RLEACCEL, SDL_ALPHA_OPAQUE);
+
 	SDL_Surface *optimized_surf=SDL_DisplayFormatAlpha(load_surf);
 	SDL_FreeSurface(load_surf);
 	if (!optimized_surf) return NULL;
+
+	//~ SDL_SetAlpha(optimized_surf,SDL_SRCALPHA|SDL_RLEACCEL, SDL_ALPHA_OPAQUE);
 	
-	SDL_SetColorKey(optimized_surf,SDL_SRCCOLORKEY|SDL_RLEACCEL,SDL_MapRGB(optimized_surf->format,0xff,0x00,0xff));
-	SDL_SetAlpha(optimized_surf,0,0);	
 	return optimized_surf;
 }
 
