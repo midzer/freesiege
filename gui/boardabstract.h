@@ -15,12 +15,11 @@
 //	You should have received a copy of the GNU General Public License
 //	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
-#ifndef __BOARD_H
-#define __BOARD_H
+#ifndef __BOARDABSTRACT_H
+#define __BOARDABSTRACT_H
 
 #include "combinaisoncollection.h"
 #include "battlefield.h"
-#include "boardabstract.h"
 
 #define BOARD_H 5  //Board grid height
 #define BOARD_W 6  //Board grid width
@@ -29,25 +28,21 @@
 #define ELEM_W  50 //Width of element sprite
 #define SPACING 10 //Spacing between element
 
-class Board : public BoardAbstract{
+class BoardAbstract {
 public:
-	Board(const SpriteCollection *spr_coll,const CombinaisonCollection *com_coll,BattleField *field,PLAYER player);
-	~Board();
-	void draw();
-	void logic(bool flowers);
+	BoardAbstract(const SpriteCollection *spr_coll,const CombinaisonCollection *com_coll,BattleField *field,PLAYER player);
+	~BoardAbstract();
+	virtual void draw();
+	virtual void logic(bool marion) = 0;
 	int cursor_i,cursor_j;
 	int select_i,select_j;
+	virtual void hasWin() {};
+	virtual int getLevel() {return 0;}
 protected:
 	PLAYER player;
-	SDLKey key_select;
-	SDLKey key_swap;
-	SDLKey key_validate;
-	SDLKey key_left;
-	SDLKey key_right;
-	SDLKey key_down;
-	SDLKey key_up;
 	
 	void draw_background(float offset);
+
 	const SpriteCollection *spr_coll;
 	char board[BOARD_H][BOARD_W];
 	Sprite *bit_wood;

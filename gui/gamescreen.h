@@ -21,13 +21,44 @@
 #include "background.h"
 #include "combinaisoncollection.h"
 #include "musiccollection.h"
+#include "menuscreen.h"
+
+#include <utility>
+#include "boardabstract.h"
 
 class GameScreen {
 public:
-	GameScreen(const SpriteCollection *spr_coll,const CombinaisonCollection *cmb_coll,const std::string &ttf_path,TextureIds ids,Background *background,MusicCollection *music_coll);
+	
+	enum GAMEMODE {VERSUS, SURVIVOR, EXHIBITION}; //, NETWORK
+	
+	GameScreen(const SpriteCollection *spr_coll,const CombinaisonCollection *cmb_coll,const std::string &ttf_path,TextureIds ids,Background *background,MusicCollection *music_coll,GAMEMODE mode);
 	~GameScreen();
 	void display_game(SDL_Surface *screen);
+	
+	void set_ai_level(MenuScreen::AILEVEL ai_level);
+	void init_game();
+	
 private:
+	void show_final_screen(SDL_Surface *screen);
+	
+	GAMEMODE mode;
+
+	PLAYER winner;
+	int p1_win;
+	int p2_win;
+	bool quit_game;
+	
+	/* SURVIVOR SPECIFICS */
+    int level;
+    int base_speed;
+	TextureId go_id,perfect_id,ko_id;
+    /* ------------------ */
+	
+	std::pair<LifeBar*,LifeBar*> life_bars;
+	Foreground* foreground;
+	BattleField* battlefield;
+	std::pair<BoardAbstract*,BoardAbstract*> boards;
+	
 	const SpriteCollection *spr_coll;
 	const CombinaisonCollection *cmb_coll;
 	MusicCollection *music_coll;

@@ -19,26 +19,9 @@
 #include "param.h"
 #include "options.h"
 
-Board::Board(const SpriteCollection *spr_coll,const CombinaisonCollection *com_coll,BattleField *field,PLAYER player) : BoardAbstract(spr_coll,com_coll,field,player) {
+BoardAbstract::BoardAbstract(const SpriteCollection *spr_coll,const CombinaisonCollection *com_coll,BattleField *field,PLAYER player) {
 	//init player key context
 	this->player=player;
-	if (player==PLAYER_1) {
-		key_select=Options::player1keys.keys[Keys::SELECT];
-		key_swap=Options::player1keys.keys[Keys::SWAP];
-		key_validate=Options::player1keys.keys[Keys::VALIDATE];
-		key_left=Options::player1keys.keys[Keys::LEFT];
-		key_right=Options::player1keys.keys[Keys::RIGHT];
-		key_down=Options::player1keys.keys[Keys::DOWN];
-		key_up=Options::player1keys.keys[Keys::UP];
-	} else {
-		key_select=Options::player2keys.keys[Keys::SELECT];
-		key_swap=Options::player2keys.keys[Keys::SWAP];
-		key_validate=Options::player2keys.keys[Keys::VALIDATE];
-		key_left=Options::player2keys.keys[Keys::LEFT];
-		key_right=Options::player2keys.keys[Keys::RIGHT];
-		key_down=Options::player2keys.keys[Keys::DOWN];
-		key_up=Options::player2keys.keys[Keys::UP];
-	}	
 		
 	//init board randomly
 	for (int i=0;i<BOARD_H;i++) {
@@ -84,12 +67,12 @@ Board::Board(const SpriteCollection *spr_coll,const CombinaisonCollection *com_c
 	compute();
 }
 
-void Board::compute() {
+void BoardAbstract::compute() {
 	compute_combi_str();
 	compute_match();
 }
 
-void Board::compute_match() {
+void BoardAbstract::compute_match() {
 	int y=0;
 	const CombinaisonCollection::Coll::const_iterator end=this->com_coll->coll.end();
 	CombinaisonCollection::Coll::const_iterator iter=this->com_coll->coll.begin();
@@ -105,7 +88,7 @@ void Board::compute_match() {
 	}
 }
 
-void Board::compute_combi_str() {
+void BoardAbstract::compute_combi_str() {
 	combi_str="";
 	for (int i=BOARD_H-2; i<BOARD_H; i++) {
 		for (int j=0;j<BOARD_W;j++) {
@@ -114,7 +97,7 @@ void Board::compute_combi_str() {
 	}
 }
 
-void Board::draw_background(float offset) {
+void BoardAbstract::draw_background(float offset) {
 	//draw elements
 	float x,y;
 	y=SPACING/2+BOARD_BORDER;
@@ -150,7 +133,7 @@ void Board::draw_background(float offset) {
 	}
 }
 
-void Board::validate() {
+void BoardAbstract::validate() {
 	if (!matched.empty()) {
 		//out the created unit
 		const CombinaisonCollection::Coll::const_iterator end=this->matched.end();
@@ -207,70 +190,9 @@ void Board::validate() {
 	} //else std::cout<<"nothing to validate for player"<<player<<" ..."<<std::endl;
 }
 
-void Board::logic(bool flowers) {
-	Uint8 *key=SDL_GetKeyState(NULL);
+BoardAbstract::~BoardAbstract() {}
 
-	if (!this->cursor_changed) {
-		if (key[key_left]) this->cursor_j--;
-		else if (key[key_right]) this->cursor_j++;
-		if (key[key_up]) this->cursor_i--;
-		else if (key[key_down]) this->cursor_i++;
-		this->cursor_changed=key[key_left] || key[key_right] || key[key_down] || key[key_up];
-	}
-	
-	if (this->cursor_i>=BOARD_H) this->cursor_i=0;
-	else if (this->cursor_i<0) this->cursor_i=BOARD_H-1;
-	if (this->cursor_j>=BOARD_W) this->cursor_j=0;
-	else if (this->cursor_j<0) this->cursor_j=BOARD_W-1;
-	
-	char dummy;
-
-	switch (this->state) {
-	case IDLE:
-		if (key[key_select] && !this->state_changed) {
-			this->select_i=this->cursor_i;
-			this->select_j=this->cursor_j;
-			this->state=SELECTED;
-			this->state_changed=true;
-		} else if (key[key_validate] && !this->state_changed) {
-			this->state=VALIDATE;
-			this->state_changed=true;
-		}
-		break;
-	case SELECTED:
-		if (key[key_swap] && !this->state_changed) {
-			dummy=this->board[cursor_i][cursor_j];
-			this->board[cursor_i][cursor_j]=this->board[select_i][select_j];
-			this->board[select_i][select_j]=dummy;
-			compute();
-			this->state=IDLE;
-			this->state_changed=true;
-		} else if (key[key_select] && !this->state_changed) {
-			this->select_i=this->cursor_i;
-			this->select_j=this->cursor_j;
-			this->state=SELECTED;
-			this->state_changed=true;
-		} else if (key[key_validate] && !this->state_changed) {
-			this->state=VALIDATE;
-			this->state_changed=true;
-		}
-		break;
-	case VALIDATE:
-		if (!this->state_changed) {
-			validate();
-			this->state=IDLE;
-			this->state_changed=true;
-		}
-		break;
-	default:
-		std::cerr<<"unknown state: "<<this->state<<std::endl;
-		break;
-	}
-}
-
-Board::~Board() {}
-
-void Board::draw() {
+void BoardAbstract::draw() {
 	Uint8 *key=SDL_GetKeyState(NULL);
 	
 	int offset;
@@ -280,7 +202,4 @@ void Board::draw() {
 	draw_background(offset);
 	bit_cursor->draw(offset+this->cursor_j*(ELEM_W+SPACING),BOARD_BORDER+this->cursor_i*(ELEM_H+SPACING));
 	if (this->state==SELECTED) bit_cursor->draw(offset+this->select_j*(ELEM_W+SPACING),BOARD_BORDER+this->select_i*(ELEM_H+SPACING));
-	
-	this->state_changed=this->state_changed && (key[key_select] || key[key_swap] || key[key_validate]); //reset state changed
-	this->cursor_changed=this->cursor_changed && (key[key_left] || key[key_right] || key[key_down] || key[key_up]); //reset cursor changed
 }

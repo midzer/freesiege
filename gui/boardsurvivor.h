@@ -15,28 +15,25 @@
 //	You should have received a copy of the GNU General Public License
 //	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
-#ifndef __LIFEBAR_H
-#define __LIFEBAR_H
+#ifndef __BOARD_SURVIVOR_H
+#define __BOARD_SURVIVOR_H
 
-#include "unit.h"
+#include "board.h"
+#include "menuscreen.h"
 
-#define LIFE_FACTOR 60
-
-class LifeBar {
-public:
-	LifeBar(const SpriteCollection *spr_coll,PLAYER player);
-	~LifeBar();
-	void draw();
-	void damage(int a);
-	int get_life() const;
-private:
-	const Sprite *border;
-
-	void compute();
-	float life;
-	float recov_life;
-	float old_life;
-	PLAYER player;
+class BoardSurvivor : public Board {
+	public:
+		BoardSurvivor(const SpriteCollection *spr_coll,const CombinaisonCollection *com_coll, BattleField *field, PLAYER p, int base_speed=150);
+		void draw() {};
+		void logic(bool flowers);
+		void set_ai_level(MenuScreen::AILEVEL ai_level);
+		void hasWin();
+		int getLevel() {return level;}
+	private:
+		int ticks;
+		int level;
+		int base_speed;
 };
+
 
 #endif

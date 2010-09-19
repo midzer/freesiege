@@ -137,7 +137,8 @@ void BattleField::refresh() {
 
 void BattleField::draw() {
 	//draw
-	for (Units::const_iterator iter=units.begin(); iter!=units.end(); iter++) (*iter)->draw();
+	for (Units::const_iterator iter=units.begin(); iter!=units.end(); iter++)
+		(*iter)->draw();
 
 	//draw castles
 	bit_castle->draw(0,SCREEN_H-CastleH);

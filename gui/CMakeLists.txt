@@ -6,6 +6,8 @@ SET(FS_GUI_SRCS
     gui/foreground.cpp
     gui/battlefield.cpp
     gui/board.cpp
+    gui/boardabstract.cpp
+    gui/boardsurvivor.cpp
     gui/menu.cpp
     gui/gamescreen.cpp
     gui/trainingscreen.cpp

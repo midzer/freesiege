@@ -19,6 +19,7 @@
 #include "trainingscreen.h"
 
 #include "board.h"
+#include "boardsurvivor.h"
 #include "utils.h"
 #include "param.h"
 #include "plant.h"
@@ -93,7 +94,6 @@ TrainingScreen::~TrainingScreen() {
 void TrainingScreen::display_game(SDL_Surface *screen) {
 	int p1_win=0;
 	int p2_win=0;
-    level=1;
 
 	bool quit_game=false;
 	bool paused=false;
@@ -115,6 +115,7 @@ void TrainingScreen::display_game(SDL_Surface *screen) {
 		Foreground foreground(spr_coll);
 		BattleField battlefield(spr_coll,&life_bar1,&life_bar2,&foreground);
 		Board board1(spr_coll,cmb_coll,&battlefield,PLAYER_1);
+		BoardSurvivor board2(spr_coll,cmb_coll,&battlefield,PLAYER_2,base_speed);
 		
 		//main loop
 		while (!quit && !quit_game) {
@@ -127,6 +128,7 @@ void TrainingScreen::display_game(SDL_Surface *screen) {
 				battlefield.refresh();
 			battlefield.draw();
 			board1.draw();
+			board2.draw();
 			foreground.draw();
 			if(paused) {
 				fill_rect_opengl(0,0,SCREEN_W,SCREEN_H,0,0,0,0.7);
@@ -137,7 +139,8 @@ void TrainingScreen::display_game(SDL_Surface *screen) {
 			
 			if(!paused) {
 				//logic
-				board1.logic();
+				board1.logic(foreground.p1_flower);
+				board2.logic(foreground.p2_flower);
 			}
 			
 			while (SDL_PollEvent(&event)) {
@@ -157,31 +160,11 @@ void TrainingScreen::display_game(SDL_Surface *screen) {
 					break;
 				}
 			}
-            //Spawn computer units
-            if(!paused)
-				if (play_ticks < SURVIVAL_TIME) { //you win if you survived
-					if (not foreground.p2_flower or ticks%4==0) //the flower randomly slows the computer
-					  {
-						int soldier_tics=(base_speed * std::pow(0.9,level-1));
-						if (play_ticks%soldier_tics==0)
-							battlefield.spawn(SOLDIER,PLAYER_2);
-						if (play_ticks%(soldier_tics*6)==0)
-							battlefield.spawn(KNIGHT,PLAYER_2);
-						if (play_ticks%(soldier_tics*7)==0)
-							battlefield.spawn(VETERAN,PLAYER_2);
-						if (play_ticks%(soldier_tics*20)==0)
-							battlefield.spawn(PLANT,PLAYER_2);
-						if (play_ticks%(soldier_tics*24)==0)
-							battlefield.spawn(GOLEM,PLAYER_2);
-						if (play_ticks%(soldier_tics*22)==0)
-							battlefield.spawn(DRAGON,PLAYER_2);
-					  }
-				}
-				else if (battlefield.get_nonplant_unit_count(PLAYER_2) == 0)
-				  {
-					winner=PLAYER_1;
-					quit=true;
-				  }
+
+            if( !paused && (play_ticks > SURVIVAL_TIME) && (battlefield.get_nonplant_unit_count(PLAYER_2) == 0) ) {
+				winner=PLAYER_1;
+				quit=true;
+			}
 
 			if (life_bar1.get_life()<=0) {
 				winner=PLAYER_2;
@@ -193,7 +176,8 @@ void TrainingScreen::display_game(SDL_Surface *screen) {
 
 			while (ticks>(SDL_GetTicks()-1000/FPS)) SDL_Delay(3);
 			ticks=SDL_GetTicks();
-            play_ticks++;
+			if(!paused)
+				play_ticks++;
             
 			if(!Mix_PlayingMusic()) {
 				music_coll->play_random_music();
@@ -204,7 +188,7 @@ void TrainingScreen::display_game(SDL_Surface *screen) {
 		switch (winner) {
 		case PLAYER_1:
 			p1_win++;
-            level++;
+            board2.hasWin();
 			break;
 		case PLAYER_2:
 			p2_win++;
@@ -214,7 +198,7 @@ void TrainingScreen::display_game(SDL_Surface *screen) {
 		}
 		
 		//render score
-		SDL_Surface *score_surf=TTF_RenderText_Solid(font,("Level " + number_as_roman(level-1)+" cleared!!!").c_str(),color);
+		SDL_Surface *score_surf=TTF_RenderText_Solid(font,("Level " + number_as_roman(level)+" cleared!!!").c_str(),color);
 		Sprite score_sprite(score_surf,score_id);
 		SDL_FreeSurface(score_surf);
 		SDL_Surface *go_surf=TTF_RenderText_Solid(font,"GAME OVER!",color);
@@ -251,30 +235,30 @@ void TrainingScreen::display_game(SDL_Surface *screen) {
                 go_sprite.draw((SCREEN_W-go_sprite.w)/2,50);
 				current_skull->draw(SCREEN_W/2-current_skull->w/2,(SCREEN_H-current_skull->h)/2);
 			} else {
-                score_sprite.draw((SCREEN_W-score_sprite.w)/2,50);
                 if (perfect)
                   {
-                    perfect_sprite.draw((SCREEN_W-perfect_sprite.w)/2,60+score_sprite.h);
                     if (ko) {
-                        ko_sprite.draw((SCREEN_W-ko_sprite.w)/2,70+score_sprite.h+perfect_sprite.h);
-                        current_hand->draw(SCREEN_W/2-current_hand->w/2-160,(SCREEN_H-current_hand->h)/2+perfect_sprite.h);
-                        current_hand->draw(SCREEN_W/2-current_hand->w/2,(SCREEN_H-current_hand->h)/2+perfect_sprite.h);
-                        current_hand->draw(SCREEN_W/2-current_hand->w/2+160,(SCREEN_H-current_hand->h)/2+perfect_sprite.h);
+                        current_hand->draw(SCREEN_W/2-current_hand->w/2-160,(SCREEN_H-current_hand->h)/2);
+                        current_hand->draw(SCREEN_W/2-current_hand->w/2,(SCREEN_H-current_hand->h)/2);
+                        current_hand->draw(SCREEN_W/2-current_hand->w/2+160,(SCREEN_H-current_hand->h)/2);
+                        ko_sprite.draw((SCREEN_W-ko_sprite.w)/2,60+score_sprite.h+perfect_sprite.h);
                     }
                     else
                       {
-                        current_hand->draw(SCREEN_W/2-current_hand->w/2-80,(SCREEN_H-current_hand->h)/2+perfect_sprite.h);
-                        current_hand->draw(SCREEN_W/2-current_hand->w/2+80,(SCREEN_H-current_hand->h)/2+perfect_sprite.h);
+                        current_hand->draw(SCREEN_W/2-current_hand->w-perfect_sprite.w/2,(SCREEN_H-current_hand->h)/2);
+                        current_hand->draw(SCREEN_W/2+perfect_sprite.w/2,(SCREEN_H-current_hand->h)/2);
                       }
+                    perfect_sprite.draw((SCREEN_W-perfect_sprite.w)/2,60+score_sprite.h);
                   }
                 else if (ko)
                   {
-                    ko_sprite.draw((SCREEN_W-ko_sprite.w)/2,70+score_sprite.h+perfect_sprite.h);
-                    current_hand->draw(SCREEN_W/2-current_hand->w-ko_sprite.w/2,(SCREEN_H-current_hand->h)/2+perfect_sprite.h);
-                    current_hand->draw(SCREEN_W/2+ko_sprite.w/2,(SCREEN_H-current_hand->h)/2+perfect_sprite.h);
+                    current_hand->draw(SCREEN_W/2-current_hand->w-ko_sprite.w/2,(SCREEN_H-current_hand->h)/2);
+                    current_hand->draw(SCREEN_W/2+ko_sprite.w/2,(SCREEN_H-current_hand->h)/2);
+                    ko_sprite.draw((SCREEN_W-ko_sprite.w)/2,60+score_sprite.h);
                   }
                 else
-                    current_hand->draw(SCREEN_W/2-current_hand->w/2,(SCREEN_H-current_hand->h)/2+perfect_sprite.h);
+                    current_hand->draw(SCREEN_W/2-current_hand->w/2,(SCREEN_H-current_hand->h)/2);
+                score_sprite.draw((SCREEN_W-score_sprite.w)/2,50);
 			}
 
 			SDL_GL_SwapBuffers();

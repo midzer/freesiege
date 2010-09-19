@@ -18,13 +18,17 @@
 #include "gamescreen.h"
 
 #include "board.h"
+#include "boardsurvivor.h"
 #include "utils.h"
 #include "param.h"
 #include "options.h"
 
 #define FONT_COLOR { 0x77, 0xd1, 0x00, 0 }
+#define SURVIVAL_TIME 3000
 
-GameScreen::GameScreen(const SpriteCollection *spr_coll,const CombinaisonCollection *cmb_coll,const std::string &ttf_path,TextureIds ids,Background *background,MusicCollection *music_coll) {
+using namespace std;
+
+GameScreen::GameScreen(const SpriteCollection *spr_coll,const CombinaisonCollection *cmb_coll,const std::string &ttf_path,TextureIds ids,Background *background,MusicCollection *music_coll,GAMEMODE mode) {
 	font=TTF_OpenFont(ttf_path.c_str(),80);
 	font_huge=TTF_OpenFont(ttf_path.c_str(),120);
 	font_tiny=TTF_OpenFont(ttf_path.c_str(),40);
@@ -48,17 +52,38 @@ GameScreen::GameScreen(const SpriteCollection *spr_coll,const CombinaisonCollect
 
 	score_id=ids[3];
 	pause_id=ids[4];
+	perfect_id=ids[5];
+	go_id=ids[6];
+	ko_id=ids[7];
 
 	this->spr_coll=spr_coll;
 	this->cmb_coll=cmb_coll;
 	this->music_coll=music_coll;
 	this->background=background;
+	
+	this->mode = mode;
+	
+	life_bars.first = NULL;
+	life_bars.second = NULL;
+	foreground = NULL;
+	battlefield = NULL;
+	boards.first = NULL;
+	boards.second = NULL;
+	
+	init_game();
 }
 
 GameScreen::~GameScreen() {
 	delete text_p1_won;
 	delete text_p2_won;
 	delete text_key_help;
+	
+	delete life_bars.first;
+	delete life_bars.second;
+	delete foreground;
+	delete battlefield;
+	delete boards.first;
+	delete boards.second;
 	
  	if(TTF_WasInit()) {
  		if(font)
@@ -74,11 +99,16 @@ GameScreen::~GameScreen() {
 
 }
 
-void GameScreen::display_game(SDL_Surface *screen) {
-	int p1_win=0;
-	int p2_win=0;
+void GameScreen::init_game() {
+	winner=PLAYER_NEUTRAL;
+	p1_win=0;
+	p2_win=0;
+	quit_game=false;
+	
+}
 
-	bool quit_game=false;
+void GameScreen::display_game(SDL_Surface *screen) {
+
 	bool paused=false;
 	
 	SDL_Event event;
@@ -88,17 +118,38 @@ void GameScreen::display_game(SDL_Surface *screen) {
 	SDL_Surface *pause_surf=TTF_RenderText_Solid(font,"GAME PAUSED",color);
 	Sprite pause_sprite(pause_surf,pause_id);
 	SDL_FreeSurface(pause_surf);
+	
+	init_game();
 
 	while (!quit_game) {
 		//game object init
+        int play_ticks=1;
 		bool quit=false;
-		PLAYER winner=PLAYER_NEUTRAL;
-		LifeBar life_bar1(spr_coll,PLAYER_1);
-		LifeBar life_bar2(spr_coll,PLAYER_2);
-		Foreground foreground(spr_coll);
-		BattleField battlefield(spr_coll,&life_bar1,&life_bar2,&foreground);
-		Board board1(spr_coll,cmb_coll,&battlefield,PLAYER_1);
-		Board board2(spr_coll,cmb_coll,&battlefield,PLAYER_2);
+		delete life_bars.first;
+		delete life_bars.second;
+		delete foreground;
+		delete battlefield;
+		delete boards.first;
+		delete boards.second;
+		
+		life_bars.first = new LifeBar(spr_coll,PLAYER_1);
+		life_bars.second = new LifeBar(spr_coll,PLAYER_2);
+		foreground = new Foreground(spr_coll);
+		battlefield = new BattleField(spr_coll,life_bars.first,life_bars.second,foreground);
+		switch(mode) {
+			case VERSUS:
+				boards.first = new Board(spr_coll,cmb_coll,battlefield,PLAYER_1);
+				boards.second = new Board(spr_coll,cmb_coll,battlefield,PLAYER_2);
+				break;
+			case SURVIVOR:
+				boards.first = new Board(spr_coll,cmb_coll,battlefield,PLAYER_1);
+				boards.second = new BoardSurvivor(spr_coll,cmb_coll,battlefield,PLAYER_2,base_speed);
+				break;
+			case EXHIBITION:
+				boards.first = new BoardSurvivor(spr_coll,cmb_coll,battlefield,PLAYER_1,base_speed);
+				boards.second = new BoardSurvivor(spr_coll,cmb_coll,battlefield,PLAYER_2,base_speed);
+				break;
+		}
 				
 
 		//main loop
@@ -106,14 +157,14 @@ void GameScreen::display_game(SDL_Surface *screen) {
 			//draw
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			background->draw();
-			life_bar1.draw();
-			life_bar2.draw();
+			life_bars.first->draw();
+			life_bars.second->draw();
 			if(!paused)
-				battlefield.refresh();
-			battlefield.draw();
-			board1.draw();
-			board2.draw();
-			foreground.draw();
+				battlefield->refresh();
+			battlefield->draw();
+			boards.first->draw();
+			boards.second->draw();
+			foreground->draw();
 			if(paused) {
 				fill_rect_opengl(0,0,SCREEN_W,SCREEN_H,0,0,0,0.7);
 				pause_sprite.draw((SCREEN_W-pause_sprite.w)/2,(SCREEN_H-pause_sprite.h)/2);
@@ -123,8 +174,8 @@ void GameScreen::display_game(SDL_Surface *screen) {
 			
 			if(!paused) {
 				//logic
-				board1.logic();
-				board2.logic();
+				boards.first->logic(foreground->p1_flower);
+				boards.second->logic(foreground->p2_flower);
 			}
 			
 			while (SDL_PollEvent(&event)) {
@@ -132,8 +183,8 @@ void GameScreen::display_game(SDL_Surface *screen) {
 				case SDL_KEYDOWN:
 					if (event.key.keysym.sym==SDLK_ESCAPE) quit_game=true;
 #ifdef DEBUG_MODE
-					else if (event.key.keysym.sym==SDLK_t) life_bar2.damage(100); //DEBUG
-					else if (event.key.keysym.sym==SDLK_y) life_bar1.damage(100);
+					else if (event.key.keysym.sym==SDLK_t) life_bars.second->damage(100); //DEBUG
+					else if (event.key.keysym.sym==SDLK_y) life_bars.first->damage(100);
 #endif
 					else if (event.key.keysym.sym==Options::pause_key) paused=!paused;
 					break;
@@ -145,91 +196,191 @@ void GameScreen::display_game(SDL_Surface *screen) {
 				}
 			}
 
-			if (life_bar1.get_life()<=0) {
+            if( (mode==SURVIVOR) &&
+				!paused &&
+				(play_ticks > SURVIVAL_TIME) &&
+				(battlefield->get_nonplant_unit_count(PLAYER_2) == 0)
+				) {
+				winner=PLAYER_1;
+				quit=true;
+			}
+			
+			if (life_bars.first->get_life()<=0) {
 				winner=PLAYER_2;
 				quit=true;
-			} else if (life_bar2.get_life()<=0) {
+			} else if (life_bars.second->get_life()<=0) {
 				winner=PLAYER_1;
 				quit=true;
 			}
 
 			while (ticks>(SDL_GetTicks()-1000/FPS)) SDL_Delay(3);
 			ticks=SDL_GetTicks();
+			if(!paused)
+				play_ticks++;
 			
 			if(!Mix_PlayingMusic()) {
 				music_coll->play_random_music();
 			}
 		}
 
-		//final screen
-		const Sprite *winning_message=NULL;
-		switch (winner) {
-		case PLAYER_1:
-			p1_win++;
-			winning_message=text_p1_won;
-			break;
-		case PLAYER_2:
-			p2_win++;
-			winning_message=text_p2_won;
-			break;
-		default:
-			break;
-		}
+		show_final_screen(screen);
+	}
+}
 		
+void GameScreen::show_final_screen(SDL_Surface *screen) {
+	SDL_Color color=FONT_COLOR;
+	int ticks = SDL_GetTicks();
+	
+	//final screen
+	const Sprite *winning_message=NULL;
+	switch (winner) {
+	case PLAYER_1:
+		p1_win++;
+		winning_message=text_p1_won;
+        boards.first->hasWin();
+		break;
+	case PLAYER_2:
+		p2_win++;
+		winning_message=text_p2_won;
+        boards.second->hasWin();
+		break;
+	default:
+		break;
+	}
+	
+	Sprite *go_sprite = NULL,*ko_sprite = NULL,*score_sprite = NULL;
+	bool ko;
+	if(mode==SURVIVOR) {
+		//render score
+		SDL_Surface *score_surf=TTF_RenderText_Solid(font,("Level " + number_as_roman(boards.second->getLevel())+" cleared!!!").c_str(),color);
+		score_sprite = new Sprite(score_surf,score_id);
+		SDL_FreeSurface(score_surf);
+		SDL_Surface *go_surf=TTF_RenderText_Solid(font,"GAME OVER!",color);
+		go_sprite = new Sprite(go_surf,go_id);
+		SDL_FreeSurface(go_surf);
+		SDL_Surface *ko_surf=TTF_RenderText_Solid(font,"KO!",color);
+		ko_sprite = new Sprite(ko_surf,ko_id);
+		SDL_FreeSurface(ko_surf);
+		ko=(life_bars.second->get_life() == 0);
+	} else if((mode==VERSUS)||(mode==EXHIBITION)) {
 		//render score
 		SDL_Surface *score_surf=TTF_RenderText_Solid(font,(number_as_roman(p1_win)+" : "+number_as_roman(p2_win)).c_str(),color);
-		Sprite score_sprite(score_surf,score_id);
+		score_sprite = new Sprite(score_surf,score_id);
 		SDL_FreeSurface(score_surf);
-
-		quit=false;
-		while (!quit && !quit_game) {
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			//background
-			background->draw();
-			life_bar1.draw();
-			life_bar2.draw();
-			battlefield.refresh();
-			battlefield.draw();
-			board1.draw();
-			board2.draw();
-			foreground.draw();
-			
-			//overlay
-			fill_rect_opengl(0,0,SCREEN_W,SCREEN_H,0,0,0,0.7);
-			winning_message->draw((SCREEN_W-winning_message->w)/2,50);
-			text_key_help->draw((SCREEN_W-text_key_help->w)/2,SCREEN_H-50-text_key_help->h);
-			score_sprite.draw((SCREEN_W-score_sprite.w)/2,(SCREEN_H-score_sprite.h)/2);
-
-			const Sprite* current_skull=skull.get_next_bitmap();
-			const Sprite* current_hand=hand.get_next_bitmap();
-			if (winner==PLAYER_2) {
-				current_skull->draw(SCREEN_W/2-score_sprite.w/2-current_skull->w,(SCREEN_H-current_skull->h)/2+10);
-				current_hand->draw(SCREEN_W/2+score_sprite.w/2,(SCREEN_H-current_hand->h)/2+10);
-			} else {
-				current_hand->draw(SCREEN_W/2-score_sprite.w/2-current_hand->w,(SCREEN_H-current_hand->h)/2+10);
-				current_skull->draw(SCREEN_W/2+score_sprite.w/2,(SCREEN_H-current_skull->h)/2+10);
-			}
-
-			SDL_GL_SwapBuffers();
-			SDL_Flip(screen);
-
-			while (SDL_PollEvent(&event)) {
-				switch (event.type) {
-				case SDL_KEYDOWN:
-					if (event.key.keysym.sym==SDLK_ESCAPE) quit_game=true; //quit game
-					if (event.key.keysym.sym==SDLK_SPACE) quit=true;
-					break;
-				case SDL_QUIT:			
-					quit_game=true;
-					break;
-				default:
-					break;
-				}
-			}
-
-			SDL_Delay(10);
-			while (ticks>(SDL_GetTicks()-1000/FPS)) SDL_Delay(3);
-			ticks=SDL_GetTicks();
-		}
 	}
+	SDL_Surface *perfect_surf=TTF_RenderText_Solid(font,"PERFECT!",color);
+	Sprite perfect_sprite(perfect_surf,perfect_id);
+	SDL_FreeSurface(perfect_surf);
+
+	bool quit=false;
+	bool perfect=((life_bars.first->get_life() == LIFE_FACTOR)||(life_bars.second->get_life() == LIFE_FACTOR));
+	while (!quit && !quit_game) {
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		//background
+		background->draw();
+		life_bars.first->draw();
+		life_bars.second->draw();
+		battlefield->refresh();
+		battlefield->draw();
+		boards.first->draw();
+		boards.second->draw();
+		foreground->draw();
+		
+		//overlay
+		fill_rect_opengl(0,0,SCREEN_W,SCREEN_H,0,0,0,0.7);
+		text_key_help->draw((SCREEN_W-text_key_help->w)/2,SCREEN_H-50-text_key_help->h);
+		if((mode==VERSUS)||(mode==EXHIBITION)) {
+			winning_message->draw((SCREEN_W-winning_message->w)/2,50);
+			score_sprite->draw((SCREEN_W-score_sprite->w)/2,(SCREEN_H-score_sprite->h)/2);
+		}
+
+		const Sprite* current_skull=skull.get_next_bitmap();
+		const Sprite* current_hand=hand.get_next_bitmap();
+		if((mode==VERSUS)||(mode==EXHIBITION)) {
+			if (winner==PLAYER_2) {
+				current_skull->draw(SCREEN_W/2-score_sprite->w/2-current_skull->w,(SCREEN_H-current_skull->h)/2+10);
+				current_hand->draw(SCREEN_W/2+score_sprite->w/2,(SCREEN_H-current_hand->h)/2+10);
+			} else {
+				current_hand->draw(SCREEN_W/2-score_sprite->w/2-current_hand->w,(SCREEN_H-current_hand->h)/2+10);
+				current_skull->draw(SCREEN_W/2+score_sprite->w/2,(SCREEN_H-current_skull->h)/2+10);
+			}
+		} else if (mode == SURVIVOR) {
+			if (winner==PLAYER_2) {
+                go_sprite->draw((SCREEN_W-go_sprite->w)/2,50);
+				current_skull->draw(SCREEN_W/2-current_skull->w/2,(SCREEN_H-current_skull->h)/2);
+			} else {
+                if (perfect)
+                  {
+                    if (ko) {
+                        current_hand->draw(SCREEN_W/2-current_hand->w/2-160,(SCREEN_H-current_hand->h)/2);
+                        current_hand->draw(SCREEN_W/2-current_hand->w/2,(SCREEN_H-current_hand->h)/2);
+                        current_hand->draw(SCREEN_W/2-current_hand->w/2+160,(SCREEN_H-current_hand->h)/2);
+                        ko_sprite->draw((SCREEN_W-ko_sprite->w)/2,60+score_sprite->h+perfect_sprite.h);
+                    }
+                    else
+                      {
+                        current_hand->draw(SCREEN_W/2-current_hand->w-perfect_sprite.w/2,(SCREEN_H-current_hand->h)/2);
+                        current_hand->draw(SCREEN_W/2+perfect_sprite.w/2,(SCREEN_H-current_hand->h)/2);
+                      }
+                    perfect_sprite.draw((SCREEN_W-perfect_sprite.w)/2,60+score_sprite->h);
+                  }
+                else if (ko)
+                  {
+                    current_hand->draw(SCREEN_W/2-current_hand->w-ko_sprite->w/2,(SCREEN_H-current_hand->h)/2);
+                    current_hand->draw(SCREEN_W/2+ko_sprite->w/2,(SCREEN_H-current_hand->h)/2);
+                    ko_sprite->draw((SCREEN_W-ko_sprite->w)/2,60+score_sprite->h);
+                  }
+                else
+                    current_hand->draw(SCREEN_W/2-current_hand->w/2,(SCREEN_H-current_hand->h)/2);
+                score_sprite->draw((SCREEN_W-score_sprite->w)/2,50);
+			}
+		}
+
+		SDL_GL_SwapBuffers();
+		SDL_Flip(screen);
+
+		SDL_Event event;
+		while (SDL_PollEvent(&event)) {
+			switch (event.type) {
+			case SDL_KEYDOWN:
+				if (event.key.keysym.sym==SDLK_ESCAPE) quit_game=true; //quit game
+				if (event.key.keysym.sym==SDLK_SPACE) quit=true;
+				break;
+			case SDL_QUIT:			
+				quit_game=true;
+				break;
+			default:
+				break;
+			}
+		}
+
+		SDL_Delay(10);
+		while (ticks>(SDL_GetTicks()-1000/FPS))
+			SDL_Delay(3);
+		ticks=SDL_GetTicks();
+	}
+    
+    delete go_sprite,ko_sprite,score_sprite;
+    
+    
+    if ( (winner==PLAYER_2) && (mode == SURVIVOR) ) quit_game=true;
+}
+
+void GameScreen::set_ai_level(MenuScreen::AILEVEL ai_level)
+{
+    switch(ai_level)
+      {
+        case 0:
+            base_speed=500;
+            break;
+        case 1:
+            base_speed=150;
+            break;
+        case 2:
+            base_speed=90;
+            break;
+        case 3:
+            base_speed=60;
+            break;
+      }
 }

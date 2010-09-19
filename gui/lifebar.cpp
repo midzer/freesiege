@@ -27,6 +27,7 @@
 
 LifeBar::LifeBar(const SpriteCollection *spr_coll,PLAYER player) {
 	this->life=1.0;
+	recov_life=life;
 	this->old_life=1.0;
 	this->player=player;
 	border=spr_coll->get_sprite("lifebar_border");
@@ -68,5 +69,4 @@ void LifeBar::draw() {
 		fill_rect_opengl(LIFE_W-LIFE_INNER_BORDER-life_w+LIFE_BORDER,LIFE_Y+LIFE_INNER_BORDER,life_w,LIFE_H-2*LIFE_INNER_BORDER,0,1,0);
 		border->draw(LIFE_BORDER,LIFE_Y);
 	}
-
 }

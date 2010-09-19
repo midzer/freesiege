@@ -23,7 +23,7 @@
 
 class MenuScreen {
 public:
-	enum SELECTION {QUIT,TWO_PLAYERS,TRAINING,COMBINAISONS};
+	enum SELECTION {QUIT,TWO_PLAYERS,TRAINING,COMBINAISONS,EXHIBITION};
 	MenuScreen(const SpriteCollection *spr_coll,const std::string &ttf_path,TextureIds ids);
 	~MenuScreen();
 	bool display_menu(SDL_Surface *screen,SELECTION &selection);
