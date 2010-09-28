@@ -21,7 +21,6 @@
 
 Board::Board(const SpriteCollection *spr_coll,const CombinaisonCollection *com_coll,BattleField *field,PLAYER player) : BoardAbstract(spr_coll,com_coll,field,player) {
 	//init player key context
-	this->player=player;
 	if (player==PLAYER_1) {
 		key_select=Options::player1keys.keys[Keys::SELECT];
 		key_swap=Options::player1keys.keys[Keys::SWAP];
@@ -38,175 +37,7 @@ Board::Board(const SpriteCollection *spr_coll,const CombinaisonCollection *com_c
 		key_right=Options::player2keys.keys[Keys::RIGHT];
 		key_down=Options::player2keys.keys[Keys::DOWN];
 		key_up=Options::player2keys.keys[Keys::UP];
-	}	
-		
-	//init board randomly
-	for (int i=0;i<BOARD_H;i++) {
-		for (int j=0;j<BOARD_W;j++) {
-			switch (rand()%4) {
-			case 0:
-				this->board[i][j]=WOOD;
-				break;
-			case 1:
-				this->board[i][j]=FIRE;
-				break;
-			case 2:
-				this->board[i][j]=STEEL;
-				break;
-			case 3:
-			default:
-				this->board[i][j]=MAGIC;
-			}
-		}
 	}
-
-	//init sprites stuff
-	this->spr_coll=spr_coll;
-	this->bit_wood=spr_coll->get_sprite("wood");
-	this->bit_steel=spr_coll->get_sprite("steel");
-	this->bit_magic=spr_coll->get_sprite("magic");
-	this->bit_fire=spr_coll->get_sprite("fire");
-	this->bit_cursor=spr_coll->get_sprite("cursor");
-	this->frame=spr_coll->get_sprite("frame");
-	this->cursor_i=0;
-	this->cursor_j=0;
-	this->select_i=-1;
-	this->select_j=-1;
-	
-	this->state=IDLE;
-	this->state_changed=false;
-	this->cursor_changed=false;
-	
-	//init combinaisons stuff
-	this->com_coll=com_coll;
-	
-	//init battle field stuff
-	this->field=field;
-	compute();
-}
-
-void Board::compute() {
-	compute_combi_str();
-	compute_match();
-}
-
-void Board::compute_match() {
-	int y=0;
-	const CombinaisonCollection::Coll::const_iterator end=this->com_coll->coll.end();
-	CombinaisonCollection::Coll::const_iterator iter=this->com_coll->coll.begin();
-	Combinaison combi(this->combi_str);
-	matched.clear();
-	while (iter!=end) {
-		if (combi.match(*iter->first)) {
-			matched.push_back(*iter);
-			combi.merge(*iter->first);
-		}
-		y+=10;
-		iter++;
-	}
-}
-
-void Board::compute_combi_str() {
-	combi_str="";
-	for (int i=BOARD_H-2; i<BOARD_H; i++) {
-		for (int j=0;j<BOARD_W;j++) {
-			combi_str+=this->board[i][j];
-		}
-	}
-}
-
-void Board::draw_background(float offset) {
-	//draw elements
-	float x,y;
-	y=SPACING/2+BOARD_BORDER;
-	frame->draw(offset,BOARD_BORDER+3*ELEM_H+3*SPACING);
-	for (int i=0;i<BOARD_H;i++) {
-		x=SPACING/2+offset;
-		for (int j=0;j<BOARD_W;j++) {
-			switch (this->board[i][j]) {
-			case WOOD:
-				bit_wood->draw(x,y);
-				break;
-			case MAGIC:
-				bit_magic->draw(x,y);
-				break;
-			case STEEL:
-				bit_steel->draw(x,y);
-				break;
-			case FIRE:
-				bit_fire->draw(x,y);
-				break;
-			default:
-				break;
-			}
-			x+=ELEM_W+SPACING;
-		}
-		y+=ELEM_H+SPACING;
-	}
-	
-	//draw matched sprite
-	Combinaison *combi;
-	for (CombinaisonCollection::Coll::const_iterator iter=matched.begin(); iter!=matched.end(); iter++) {
-		combi=iter->first;
-		spr_coll->get_sprite(*iter->second)->draw(SPACING/2+offset+combi->start_j*(ELEM_W+SPACING),SPACING/2+BOARD_BORDER+(combi->start_i+BOARD_H-2)*(ELEM_H+SPACING));
-	}
-}
-
-void Board::validate() {
-	if (!matched.empty()) {
-		//out the created unit
-		const CombinaisonCollection::Coll::const_iterator end=this->matched.end();
-		CombinaisonCollection::Coll::const_iterator iter=this->matched.begin();
-		//std::cout<<"spawning for player"<<player<<":";
-		while (iter!=end) {
-			//std::cout<<" "<<*iter->second;
-			std::string *name=iter->second;
-			if (*name=="soldier") field->spawn(SOLDIER,player);
-			else if (*name=="druid") field->spawn(DRUID,player);
-			else if (*name=="knight") field->spawn(KNIGHT,player);
-			else if (*name=="golem") field->spawn(GOLEM,player);
-			else if (*name=="plant") field->spawn(PLANT,player);
-			else if (*name=="dragon") field->spawn(DRAGON,player);
-			else if (*name=="marion") field->spawn(FLOWER,player);
-			else if (*name=="veteran") field->spawn(VETERAN,player);
-			else if (*name=="ram") field->spawn(RAM,player);
-			else {
-              std::cout<<"WARNING default spawing..."<<std::endl;
-              field->spawn(SOLDIER,player);
-            }
-			iter++;
-		}
-		//std::cout<<std::endl;
-
-		//scrool board and ...
-		for (int i=BOARD_H-1;i>=2;i--) {
-			for (int j=0;j<BOARD_W;j++) {
-				this->board[i][j]=this->board[i-2][j];
-			}
-		}
-		//generate two line randomly
-		for (int i=0;i<2;i++) {
-			for (int j=0;j<BOARD_W;j++) {
-				switch (rand()%4) {
-				case 0:
-					this->board[i][j]=WOOD;
-					break;
-				case 1:
-					this->board[i][j]=FIRE;
-					break;
-				case 2:
-					this->board[i][j]=STEEL;
-					break;
-				case 3:
-				default:
-					this->board[i][j]=MAGIC;
-				}
-			}
-		}
-		
-		//put board up to date
-		compute();
-	} //else std::cout<<"nothing to validate for player"<<player<<" ..."<<std::endl;
 }
 
 void Board::logic(bool flowers) {
@@ -228,61 +59,54 @@ void Board::logic(bool flowers) {
 	char dummy;
 
 	switch (this->state) {
-	case IDLE:
-		if (key[key_select] && !this->state_changed) {
-			this->select_i=this->cursor_i;
-			this->select_j=this->cursor_j;
-			this->state=SELECTED;
-			this->state_changed=true;
-		} else if (key[key_validate] && !this->state_changed) {
-			this->state=VALIDATE;
-			this->state_changed=true;
-		}
-		break;
-	case SELECTED:
-		if (key[key_swap] && !this->state_changed) {
-			dummy=this->board[cursor_i][cursor_j];
-			this->board[cursor_i][cursor_j]=this->board[select_i][select_j];
-			this->board[select_i][select_j]=dummy;
-			compute();
-			this->state=IDLE;
-			this->state_changed=true;
-		} else if (key[key_select] && !this->state_changed) {
-			this->select_i=this->cursor_i;
-			this->select_j=this->cursor_j;
-			this->state=SELECTED;
-			this->state_changed=true;
-		} else if (key[key_validate] && !this->state_changed) {
-			this->state=VALIDATE;
-			this->state_changed=true;
-		}
-		break;
-	case VALIDATE:
-		if (!this->state_changed) {
-			validate();
-			this->state=IDLE;
-			this->state_changed=true;
-		}
-		break;
-	default:
-		std::cerr<<"unknown state: "<<this->state<<std::endl;
-		break;
+		case IDLE:
+			if (key[key_select] && !this->state_changed) {
+				this->select_i=this->cursor_i;
+				this->select_j=this->cursor_j;
+				this->state=SELECTED;
+				this->state_changed=true;
+			} else if (key[key_validate] && !this->state_changed) {
+				this->state=VALIDATE;
+				this->state_changed=true;
+			}
+			break;
+		case SELECTED:
+			if (key[key_swap] && !this->state_changed) {
+				dummy=this->board[cursor_i][cursor_j];
+				this->board[cursor_i][cursor_j]=this->board[select_i][select_j];
+				this->board[select_i][select_j]=dummy;
+				compute();
+				this->state=IDLE;
+				this->state_changed=true;
+			} else if (key[key_select] && !this->state_changed) {
+				this->select_i=this->cursor_i;
+				this->select_j=this->cursor_j;
+				this->state=SELECTED;
+				this->state_changed=true;
+			} else if (key[key_validate] && !this->state_changed) {
+				this->state=VALIDATE;
+				this->state_changed=true;
+			}
+			break;
+		case VALIDATE:
+			if (!this->state_changed) {
+				validate();
+				this->state=IDLE;
+				this->state_changed=true;
+			}
+			break;
+		default:
+			std::cerr<<"unknown state: "<<this->state<<std::endl;
+			break;
 	}
 }
 
-Board::~Board() {}
-
 void Board::draw() {
+	BoardAbstract::draw();
+	
 	Uint8 *key=SDL_GetKeyState(NULL);
-	
-	int offset;
-	if (player==PLAYER_1) offset=BOARD_BORDER;
-	else offset=SCREEN_W-BOARD_W*(ELEM_H+SPACING)-BOARD_BORDER;
-	
-	draw_background(offset);
-	bit_cursor->draw(offset+this->cursor_j*(ELEM_W+SPACING),BOARD_BORDER+this->cursor_i*(ELEM_H+SPACING));
-	if (this->state==SELECTED) bit_cursor->draw(offset+this->select_j*(ELEM_W+SPACING),BOARD_BORDER+this->select_i*(ELEM_H+SPACING));
-	
 	this->state_changed=this->state_changed && (key[key_select] || key[key_swap] || key[key_validate]); //reset state changed
 	this->cursor_changed=this->cursor_changed && (key[key_left] || key[key_right] || key[key_down] || key[key_up]); //reset cursor changed
 }
+
+Board::~Board() {}

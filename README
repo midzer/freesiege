@@ -2,6 +2,23 @@ This is FREESIEGE game.
 
 Every source file in this archive is distributed under the GPL (GNU Public Licence) and Coyrighted (c) 2007 Pierre Gueth <pierregueth@users.sourceforge.net> and Joel Schaerer <joelschaerer@users.sourceforge.net>.
 See sounds/license for the music licenses.
+
+sprites/sun.bmp come from http://opengameart.org/content/iron-plague-sun2bmp and is under CC-BY-3.0
+
+The files
+   sprites/background_back.bmp
+   sprites/background_front.bmp
+and their sources:
+	xcf/foreground.xcf
+	xcf/iso-64x64-outside_ccby.png
+	xcf/landscape-bridge_sun.jpg
+are made from 
+http://opengameart.org/content/isometric-64x64-outside-tileset under CC-BY-3.0
+and landscape-bridge_sun.jpg from BattleForWesnoth under GPL.
+The resulting sprites are therefor under GPLv2
+
+
+
 Following files are under both GPLv2+ and CC-BY-SA, copyrighted Côme BERNIGAUD :
 #	modified:   sprites/any.bmp
 #	modified:   sprites/units/druid.bmp

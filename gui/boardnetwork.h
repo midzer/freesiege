@@ -15,29 +15,43 @@
 //	You should have received a copy of the GNU General Public License
 //	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
-#ifndef __BOARD_H
-#define __BOARD_H
+#ifdef NET_SUPPORT
+#ifndef __BOARDNETWORK_H
+#define __BOARDNETWORK_H
 
 #include "combinaisoncollection.h"
 #include "battlefield.h"
 #include "boardabstract.h"
+#include <SDL_types.h>
+#include <SDL_net.h>
 
-class Board : public BoardAbstract{
+#define WRITE_8(x) paquet->data[paquet->len++] = (x)
+
+class BoardNetwork : public BoardAbstract{
 public:
-	Board(const SpriteCollection *spr_coll,const CombinaisonCollection *com_coll,BattleField *field,PLAYER player);
-	~Board();
+	BoardNetwork(const SpriteCollection *spr_coll,const CombinaisonCollection *com_coll,BattleField *field,PLAYER player);
+	~BoardNetwork();
+	void draw();
 	void logic(bool flowers);
-	virtual void draw();
+	
+	static void init_network(void);
+	bool reseau__srv_rec(char* chaine, Uint8 n) {
+		if(SDLNet_UDP_Recv(res_socket, paquet) && (paquet->channel == 1 || paquet->channel == 2) && paquet->len <= n) {
+			memcpy(chaine, paquet->data, paquet->len);
+			return true;
+		}
+		return false;
+	}
+	
+	bool connect();
+	bool isConnected();
 	
 protected:
-	SDLKey key_select;
-	SDLKey key_swap;
-	SDLKey key_validate;
-	SDLKey key_left;
-	SDLKey key_right;
-	SDLKey key_down;
-	SDLKey key_up;
-	
+	IPaddress address;
+
+	static UDPpacket* paquet;
+	static UDPsocket res_socket;
 };	
 
+#endif
 #endif

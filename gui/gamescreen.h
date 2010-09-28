@@ -29,9 +29,11 @@
 class GameScreen {
 public:
 	
-	enum GAMEMODE {VERSUS, SURVIVOR, EXHIBITION}; //, NETWORK
+	enum PLAYERMODE {HUMAN, AI, REMOTE, SERVER, AUTO};
+	enum GAMEMODE {VERSUS, SURVIVOR, CLIENT};
+	//SURVIVOR means the left player have to survive the right one.
 	
-	GameScreen(const SpriteCollection *spr_coll,const CombinaisonCollection *cmb_coll,const std::string &ttf_path,TextureIds ids,Background *background,MusicCollection *music_coll,GAMEMODE mode);
+	GameScreen(const SpriteCollection *spr_coll,const CombinaisonCollection *cmb_coll,const std::string &ttf_path,TextureIds ids,Background *background,MusicCollection *music_coll,GAMEMODE mode,PLAYERMODE modep1=AUTO,PLAYERMODE modep2=AUTO);
 	~GameScreen();
 	void display_game(SDL_Surface *screen);
 	
@@ -39,8 +41,10 @@ public:
 	void init_game();
 	
 private:
+	void handleNetwork();
 	void show_final_screen(SDL_Surface *screen);
 	
+	std::pair<PLAYERMODE,PLAYERMODE> mode_p;
 	GAMEMODE mode;
 
 	PLAYER winner;

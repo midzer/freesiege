@@ -100,7 +100,7 @@ int main(int argc, char* argv[]) {
     const std::string font_name="Swift.ttf";
 	Background background(&spr_coll);
 	GameScreen training_screen(&spr_coll,&cmb_coll,base_dir+font_name,&texture_ids[350],&background,&music_coll,GameScreen::SURVIVOR);
-	GameScreen exhibition_screen(&spr_coll,&cmb_coll,base_dir+font_name,&texture_ids[400],&background,&music_coll,GameScreen::EXHIBITION);
+	GameScreen exhibition_screen(&spr_coll,&cmb_coll,base_dir+font_name,&texture_ids[400],&background,&music_coll,GameScreen::VERSUS,GameScreen::AI,GameScreen::AI);
 	GameScreen game_screen(&spr_coll,&cmb_coll,base_dir+font_name,&texture_ids[200],&background,&music_coll,GameScreen::VERSUS);
 	CombinaisonScreen combi_screen(&spr_coll,&cmb_coll,base_dir+font_name,&texture_ids[250]);
 	MenuScreen menu_screen(&spr_coll,base_dir+font_name,&texture_ids[300]);

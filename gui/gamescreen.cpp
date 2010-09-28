@@ -19,6 +19,7 @@
 
 #include "board.h"
 #include "boardsurvivor.h"
+#include "boardnetwork.h"
 #include "utils.h"
 #include "param.h"
 #include "options.h"
@@ -28,7 +29,7 @@
 
 using namespace std;
 
-GameScreen::GameScreen(const SpriteCollection *spr_coll,const CombinaisonCollection *cmb_coll,const std::string &ttf_path,TextureIds ids,Background *background,MusicCollection *music_coll,GAMEMODE mode) {
+GameScreen::GameScreen(const SpriteCollection *spr_coll,const CombinaisonCollection *cmb_coll,const std::string &ttf_path,TextureIds ids,Background *background,MusicCollection *music_coll,GAMEMODE mode,PLAYERMODE modep1,PLAYERMODE modep2) {
 	font=TTF_OpenFont(ttf_path.c_str(),80);
 	font_huge=TTF_OpenFont(ttf_path.c_str(),120);
 	font_tiny=TTF_OpenFont(ttf_path.c_str(),40);
@@ -61,6 +62,8 @@ GameScreen::GameScreen(const SpriteCollection *spr_coll,const CombinaisonCollect
 	this->music_coll=music_coll;
 	this->background=background;
 	
+	this->mode_p.first = (modep1!=AUTO?modep1:HUMAN);
+	this->mode_p.second = (modep2!=AUTO?modep2:(mode==SURVIVOR?AI:HUMAN));
 	this->mode = mode;
 	
 	life_bars.first = NULL;
@@ -136,18 +139,34 @@ void GameScreen::display_game(SDL_Surface *screen) {
 		life_bars.second = new LifeBar(spr_coll,PLAYER_2);
 		foreground = new Foreground(spr_coll);
 		battlefield = new BattleField(spr_coll,life_bars.first,life_bars.second,foreground);
-		switch(mode) {
-			case VERSUS:
+		switch(mode_p.first) {
+			default:
+			case HUMAN:
 				boards.first = new Board(spr_coll,cmb_coll,battlefield,PLAYER_1);
+				break;
+			case AI:
+				boards.first = new BoardSurvivor(spr_coll,cmb_coll,battlefield,PLAYER_1,base_speed);
+				break;
+			case REMOTE:
+				boards.first = new BoardNetwork(spr_coll,cmb_coll,battlefield,PLAYER_1);
+				break;
+			case SERVER:
+				boards.first = NULL;
+				break;
+		}
+		switch(mode_p.second) {
+			default:
+			case HUMAN:
 				boards.second = new Board(spr_coll,cmb_coll,battlefield,PLAYER_2);
 				break;
-			case SURVIVOR:
-				boards.first = new Board(spr_coll,cmb_coll,battlefield,PLAYER_1);
+			case AI:
 				boards.second = new BoardSurvivor(spr_coll,cmb_coll,battlefield,PLAYER_2,base_speed);
 				break;
-			case EXHIBITION:
-				boards.first = new BoardSurvivor(spr_coll,cmb_coll,battlefield,PLAYER_1,base_speed);
-				boards.second = new BoardSurvivor(spr_coll,cmb_coll,battlefield,PLAYER_2,base_speed);
+			case REMOTE:
+				boards.second = new BoardNetwork(spr_coll,cmb_coll,battlefield,PLAYER_1);
+				break;
+			case SERVER:
+				boards.second = NULL;
 				break;
 		}
 				
@@ -159,7 +178,7 @@ void GameScreen::display_game(SDL_Surface *screen) {
 			background->draw();
 			life_bars.first->draw();
 			life_bars.second->draw();
-			if(!paused)
+			if(!paused && (mode!=CLIENT))
 				battlefield->refresh();
 			battlefield->draw();
 			boards.first->draw();
@@ -172,10 +191,11 @@ void GameScreen::display_game(SDL_Surface *screen) {
 			SDL_GL_SwapBuffers();	
 			SDL_Flip(screen);
 			
-			if(!paused) {
+			if(!paused && mode!=CLIENT) {
 				//logic
 				boards.first->logic(foreground->p1_flower);
-				boards.second->logic(foreground->p2_flower);
+				if(mode!=SURVIVOR||(play_ticks < SURVIVAL_TIME))
+					boards.second->logic(foreground->p2_flower);
 			}
 			
 			while (SDL_PollEvent(&event)) {
@@ -205,12 +225,16 @@ void GameScreen::display_game(SDL_Surface *screen) {
 				quit=true;
 			}
 			
-			if (life_bars.first->get_life()<=0) {
-				winner=PLAYER_2;
-				quit=true;
-			} else if (life_bars.second->get_life()<=0) {
-				winner=PLAYER_1;
-				quit=true;
+			if(mode==CLIENT)
+				handleNetwork();
+			else {
+				if (life_bars.first->get_life()<=0) {
+					winner=PLAYER_2;
+					quit=true;
+				} else if (life_bars.second->get_life()<=0) {
+					winner=PLAYER_1;
+					quit=true;
+				}
 			}
 
 			while (ticks>(SDL_GetTicks()-1000/FPS)) SDL_Delay(3);
@@ -262,7 +286,7 @@ void GameScreen::show_final_screen(SDL_Surface *screen) {
 		ko_sprite = new Sprite(ko_surf,ko_id);
 		SDL_FreeSurface(ko_surf);
 		ko=(life_bars.second->get_life() == 0);
-	} else if((mode==VERSUS)||(mode==EXHIBITION)) {
+	} else if(mode==VERSUS) {
 		//render score
 		SDL_Surface *score_surf=TTF_RenderText_Solid(font,(number_as_roman(p1_win)+" : "+number_as_roman(p2_win)).c_str(),color);
 		score_sprite = new Sprite(score_surf,score_id);
@@ -289,14 +313,14 @@ void GameScreen::show_final_screen(SDL_Surface *screen) {
 		//overlay
 		fill_rect_opengl(0,0,SCREEN_W,SCREEN_H,0,0,0,0.7);
 		text_key_help->draw((SCREEN_W-text_key_help->w)/2,SCREEN_H-50-text_key_help->h);
-		if((mode==VERSUS)||(mode==EXHIBITION)) {
+		if(mode==VERSUS) {
 			winning_message->draw((SCREEN_W-winning_message->w)/2,50);
 			score_sprite->draw((SCREEN_W-score_sprite->w)/2,(SCREEN_H-score_sprite->h)/2);
 		}
 
 		const Sprite* current_skull=skull.get_next_bitmap();
 		const Sprite* current_hand=hand.get_next_bitmap();
-		if((mode==VERSUS)||(mode==EXHIBITION)) {
+		if(mode==VERSUS) {
 			if (winner==PLAYER_2) {
 				current_skull->draw(SCREEN_W/2-score_sprite->w/2-current_skull->w,(SCREEN_H-current_skull->h)/2+10);
 				current_hand->draw(SCREEN_W/2+score_sprite->w/2,(SCREEN_H-current_hand->h)/2+10);
@@ -383,4 +407,8 @@ void GameScreen::set_ai_level(MenuScreen::AILEVEL ai_level)
             base_speed=60;
             break;
       }
+}
+
+void GameScreen::handleNetwork() {
+	#warning non implémenté
 }

@@ -34,14 +34,20 @@ public:
 	~BoardAbstract();
 	virtual void draw();
 	virtual void logic(bool marion) = 0;
-	int cursor_i,cursor_j;
-	int select_i,select_j;
 	virtual void hasWin() {};
 	virtual int getLevel() {return 0;}
+	
 protected:
+	void draw_background(float offset);
+	void compute();
+	void compute_match();
+	void compute_combi_str();
+	void validate();
+	
 	PLAYER player;
 	
-	void draw_background(float offset);
+	int cursor_i,cursor_j;
+	int select_i,select_j;
 
 	const SpriteCollection *spr_coll;
 	char board[BOARD_H][BOARD_W];
@@ -50,16 +56,13 @@ protected:
 	Sprite *bit_magic;
 	Sprite *bit_fire;
 	Sprite *bit_cursor;
+	Sprite *frame;
 
-	void compute();
-	void compute_match();
 	CombinaisonCollection::Coll matched;
 	const CombinaisonCollection *com_coll;
 
-	void compute_combi_str();
 	std::string combi_str;
 
-	void validate();
 	BattleField *field;
 
 	enum STATE {IDLE, SELECTED, VALIDATE};

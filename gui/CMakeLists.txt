@@ -8,6 +8,7 @@ SET(FS_GUI_SRCS
     gui/board.cpp
     gui/boardabstract.cpp
     gui/boardsurvivor.cpp
+    gui/boardnetwork.cpp
     gui/menu.cpp
     gui/gamescreen.cpp
     gui/menuscreen.cpp
