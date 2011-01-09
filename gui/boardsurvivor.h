@@ -27,8 +27,9 @@ class BoardSurvivor : public Board {
 		void draw() {};
 		void logic(bool flowers);
 		void set_ai_level(MenuScreen::AILEVEL ai_level);
-		void hasWin();
+		void hasLost();
 		int getLevel() {return level;}
+		void newGame(BattleField *field);
 	private:
 		int ticks;
 		int level;

@@ -108,6 +108,39 @@ void GameScreen::init_game() {
 	p2_win=0;
 	quit_game=false;
 	
+	delete boards.first;
+	delete boards.second;
+	
+	switch(mode_p.first) {
+		default:
+		case HUMAN:
+			boards.first = new Board(spr_coll,cmb_coll,battlefield,PLAYER_1);
+			break;
+		case AI:
+			boards.first = new BoardSurvivor(spr_coll,cmb_coll,battlefield,PLAYER_1,base_speed);
+			break;
+		case REMOTE:
+			boards.first = new BoardNetwork(spr_coll,cmb_coll,battlefield,PLAYER_1);
+			break;
+		case SERVER:
+			boards.first = NULL;
+			break;
+	}
+	switch(mode_p.second) {
+		default:
+		case HUMAN:
+			boards.second = new Board(spr_coll,cmb_coll,battlefield,PLAYER_2);
+			break;
+		case AI:
+			boards.second = new BoardSurvivor(spr_coll,cmb_coll,battlefield,PLAYER_2,base_speed);
+			break;
+		case REMOTE:
+			boards.second = new BoardNetwork(spr_coll,cmb_coll,battlefield,PLAYER_1);
+			break;
+		case SERVER:
+			boards.second = NULL;
+			break;
+	}
 }
 
 void GameScreen::display_game(SDL_Surface *screen) {
@@ -132,44 +165,14 @@ void GameScreen::display_game(SDL_Surface *screen) {
 		delete life_bars.second;
 		delete foreground;
 		delete battlefield;
-		delete boards.first;
-		delete boards.second;
 		
 		life_bars.first = new LifeBar(spr_coll,PLAYER_1);
 		life_bars.second = new LifeBar(spr_coll,PLAYER_2);
 		foreground = new Foreground(spr_coll);
 		battlefield = new BattleField(spr_coll,life_bars.first,life_bars.second,foreground);
-		switch(mode_p.first) {
-			default:
-			case HUMAN:
-				boards.first = new Board(spr_coll,cmb_coll,battlefield,PLAYER_1);
-				break;
-			case AI:
-				boards.first = new BoardSurvivor(spr_coll,cmb_coll,battlefield,PLAYER_1,base_speed);
-				break;
-			case REMOTE:
-				boards.first = new BoardNetwork(spr_coll,cmb_coll,battlefield,PLAYER_1);
-				break;
-			case SERVER:
-				boards.first = NULL;
-				break;
-		}
-		switch(mode_p.second) {
-			default:
-			case HUMAN:
-				boards.second = new Board(spr_coll,cmb_coll,battlefield,PLAYER_2);
-				break;
-			case AI:
-				boards.second = new BoardSurvivor(spr_coll,cmb_coll,battlefield,PLAYER_2,base_speed);
-				break;
-			case REMOTE:
-				boards.second = new BoardNetwork(spr_coll,cmb_coll,battlefield,PLAYER_1);
-				break;
-			case SERVER:
-				boards.second = NULL;
-				break;
-		}
 				
+		boards.first->newGame(battlefield);
+		boards.second->newGame(battlefield);
 
 		//main loop
 		while (!quit && !quit_game) {
@@ -256,17 +259,20 @@ void GameScreen::show_final_screen(SDL_Surface *screen) {
 	int ticks = SDL_GetTicks();
 	
 	//final screen
+	
 	const Sprite *winning_message=NULL;
 	switch (winner) {
 	case PLAYER_1:
 		p1_win++;
 		winning_message=text_p1_won;
-        boards.first->hasWin();
+        boards.first->hasWon();
+        boards.second->hasLost();
 		break;
 	case PLAYER_2:
 		p2_win++;
 		winning_message=text_p2_won;
-        boards.second->hasWin();
+        boards.first->hasLost();
+        boards.second->hasWon();
 		break;
 	default:
 		break;
@@ -385,7 +391,6 @@ void GameScreen::show_final_screen(SDL_Surface *screen) {
 	}
     
     delete go_sprite,ko_sprite,score_sprite;
-    
     
     if ( (winner==PLAYER_2) && (mode == SURVIVOR) ) quit_game=true;
 }

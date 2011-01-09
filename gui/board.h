@@ -22,7 +22,7 @@
 #include "battlefield.h"
 #include "boardabstract.h"
 
-class Board : public BoardAbstract{
+class Board : public BoardAbstract {
 public:
 	Board(const SpriteCollection *spr_coll,const CombinaisonCollection *com_coll,BattleField *field,PLAYER player);
 	~Board();

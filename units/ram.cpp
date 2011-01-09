@@ -141,8 +141,8 @@ void Ram::draw() {
 		else anim_ram.get_next_bitmap()->draw_flip_h(x,y);
 		break;
 	case FIGHT:
-		if (player==PLAYER_1) anim_ram_fight.get_next_bitmap()->draw(x-6,y-6);
-		else anim_ram_fight.get_next_bitmap()->draw_flip_h(x-4,y-6);
+		if (player==PLAYER_1) anim_ram_fight.get_next_bitmap()->draw(x,y);
+		else anim_ram_fight.get_next_bitmap()->draw_flip_h(x,y);
 		break;	
 	case CADAVER:
 		bit_ram_dead->draw(x-4,BattleField::BaseY-15);

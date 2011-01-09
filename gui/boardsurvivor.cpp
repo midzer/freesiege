@@ -27,6 +27,11 @@ BoardSurvivor::BoardSurvivor(const SpriteCollection *spr_coll,const CombinaisonC
 	this->base_speed = base_speed;
 }
 
+void BoardSurvivor::newGame(BattleField *field) {
+	BoardAbstract::newGame(field);
+	this->ticks = 1;
+}
+
 void BoardSurvivor::logic(bool flowers) {
 	if (not flowers or ticks%4==0) //the flower randomly slows the computer
 	{
@@ -66,6 +71,7 @@ void BoardSurvivor::set_ai_level(MenuScreen::AILEVEL ai_level)
       }
 }
 
-void BoardSurvivor::hasWin() {
+void BoardSurvivor::hasLost() {
 	level++;
+	cout << "OLOL" << level << endl;
 }

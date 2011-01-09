@@ -35,6 +35,7 @@ public:
 	void logic(bool flowers);
 	
 	static void init_network(void);
+	
 	bool reseau__srv_rec(char* chaine, Uint8 n) {
 		if(SDLNet_UDP_Recv(res_socket, paquet) && (paquet->channel == 1 || paquet->channel == 2) && paquet->len <= n) {
 			memcpy(chaine, paquet->data, paquet->len);

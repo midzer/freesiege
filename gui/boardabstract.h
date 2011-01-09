@@ -34,8 +34,10 @@ public:
 	~BoardAbstract();
 	virtual void draw();
 	virtual void logic(bool marion) = 0;
-	virtual void hasWin() {};
+	virtual void hasWon() {};
+	virtual void hasLost() {};
 	virtual int getLevel() {return 0;}
+	virtual void newGame(BattleField *field);
 	
 protected:
 	void draw_background(float offset);

@@ -22,7 +22,23 @@
 BoardAbstract::BoardAbstract(const SpriteCollection *spr_coll,const CombinaisonCollection *com_coll,BattleField *field,PLAYER player) {
 	//init player key context
 	this->player=player;
-		
+
+	//init sprites stuff
+	this->spr_coll=spr_coll;
+	this->bit_wood=spr_coll->get_sprite("wood");
+	this->bit_steel=spr_coll->get_sprite("steel");
+	this->bit_magic=spr_coll->get_sprite("magic");
+	this->bit_fire=spr_coll->get_sprite("fire");
+	this->bit_cursor=spr_coll->get_sprite("cursor");
+	this->frame=spr_coll->get_sprite("frame");
+	
+	//init combinaisons stuff
+	this->com_coll=com_coll;
+	
+	newGame(field);
+}
+
+void BoardAbstract::newGame(BattleField *field) {
 	//init board randomly
 	for (int i=0;i<BOARD_H;i++) {
 		for (int j=0;j<BOARD_W;j++) {
@@ -42,30 +58,20 @@ BoardAbstract::BoardAbstract(const SpriteCollection *spr_coll,const CombinaisonC
 			}
 		}
 	}
-
-	//init sprites stuff
-	this->spr_coll=spr_coll;
-	this->bit_wood=spr_coll->get_sprite("wood");
-	this->bit_steel=spr_coll->get_sprite("steel");
-	this->bit_magic=spr_coll->get_sprite("magic");
-	this->bit_fire=spr_coll->get_sprite("fire");
-	this->bit_cursor=spr_coll->get_sprite("cursor");
-	this->frame=spr_coll->get_sprite("frame");
+	
+	//init board stuff
 	this->cursor_i=0;
 	this->cursor_j=0;
 	this->select_i=-1;
 	this->select_j=-1;
-	
 	this->state=IDLE;
 	this->state_changed=false;
 	this->cursor_changed=false;
 	
-	//init combinaisons stuff
-	this->com_coll=com_coll;
-	
 	//init battle field stuff
 	this->field=field;
 	compute();
+	
 }
 
 void BoardAbstract::compute() {
