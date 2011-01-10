@@ -42,6 +42,11 @@ Following files are under both GPLv2+ and CC-BY-SA, copyrighted jastew78 :
 #	xcf/chain.gif
 http://opengameart.org/content/chain-tiles
 
+Following file are under CC-BY-SA, copyrighted Richard James :
+sprites/ram.bmp
+xcf/ram.png
+anims/ram/walking00.png
+anims/ram/fighting00.png
 
 
 Following files are under GPLv2 : 
@@ -83,7 +88,6 @@ Following files are under GPLv2 :
 #	modified:   sprites/veteran.bmp
 #	modified:   sprites/wood.bmp
 sprites/plant.bmp
-sprites/ram.bmp
 
 Sources are here : 
 #	new file:   xcf/blank110x110.bmp
