@@ -21,7 +21,6 @@ The resulting sprites are therefor under GPLv2
 
 Following files are under both GPLv2+ and CC-BY-SA, copyrighted Côme BERNIGAUD :
 #	modified:   sprites/any.bmp
-#	modified:   sprites/units/druid.bmp
 #	modified:   sprites/select.bmp
 #	modified:   xcf/druid_unit.xcf
 #	modified:   sprites/title/free.png
@@ -48,6 +47,30 @@ xcf/ram.png
 anims/ram/walking00.png
 anims/ram/fighting00.png
 
+Following files are under both GPLv2 and CC-BY-SAv3, copyrighted Surt and Skorpio :
+./anims/veteran/death01.png
+./anims/veteran/death02.png
+./anims/veteran/death03.png
+./anims/veteran/death04.png
+./anims/veteran/death05.png
+./anims/veteran/death06.png
+./anims/veteran/fight00.png
+./anims/veteran/fight01.png
+./anims/veteran/fight02.png
+./anims/veteran/fight03.png
+./anims/veteran/fight04.png
+./anims/veteran/fight05.png
+./anims/veteran/walking00.png
+./anims/veteran/walking01.png
+./anims/veteran/walking02.png
+./anims/veteran/walking03.png
+./anims/veteran/walking04.png
+./anims/veteran/walking05.png
+(these are renders of the knight 3D model of OpenDungeon)
+
+Following files are under GNU GPL 2.0, GNU GPL 3.0 and CC-BY-SA 3.0 copyrighted Daniel Gregory Benoy :
+sprites/cloud2.png
+http://opengameart.org/content/fluffy-clouds
 
 Following files are under GPLv2 : 
 #	new file:   anims/final_screen/echec00.png
@@ -56,6 +79,9 @@ Following files are under GPLv2 :
 #	modified:   anims/dragon/fly01.bmp
 #	modified:   anims/dragon/fly02.bmp
 #	modified:   anims/dragon/fly03.bmp
+#	modified:   anims/dragon/fly04.bmp
+#	modified:   anims/dragon/fly05.bmp
+#	modified:   anims/dragon/fly06.bmp
 #	modified:   anims/golem/fight00.bmp
 #	modified:   anims/golem/fight01.bmp
 #	modified:   anims/golem/fight02.bmp
