@@ -23,10 +23,6 @@ Following files are under both GPLv2+ and CC-BY-SA, copyrighted Côme BERNIGAUD 
 #	modified:   sprites/any.bmp
 #	modified:   sprites/select.bmp
 #	modified:   xcf/druid_unit.xcf
-#	modified:   sprites/title/free.png
-#	modified:   sprites/title/siege.png
-#	xcf/free.xcf
-#	xcf/siege.xcf
 #	modified:   sprites/title/foreground.png
 
 Following files are under both GPLv2+ and CC-BY-SA, copyrighted Grégoire BERNIGAUD :
@@ -36,6 +32,15 @@ Following files are under both GPLv2+ and CC-BY-SA, copyrighted Grégoire BERNIG
 #	modified:   xcf/castle.xcf
 Based on these files by tidbit:
 http://opengameart.org/content/low-poly-castle-pieces
+
+Following files are under CC-BY-SA 3.0, copyrighted Côme BERNIGAUD(rendering), Grégoire BERNIGAUD(3D modifications), Skorpio(texturing)
+#	modified:   sprites/title/free.png
+#	modified:   sprites/title/siege.png
+#	xcf/free.xcf
+#	xcf/siege.xcf
+sources/xcf/logo.blend
+Based on this : 
+http://opengameart.org/content/medieval-props-textured from pfunked
 
 Following files are under both GPLv2+ and CC-BY-SA, copyrighted jastew78 :
 #	xcf/chain.gif
