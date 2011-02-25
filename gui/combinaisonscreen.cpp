@@ -92,6 +92,7 @@ void CombinaisonScreen::display_combinaisons(SDL_Surface *screen) {
 	CombinaisonSprites::const_iterator current=combinaison_sprites.begin();
 	
 	const Sprite *back=spr_coll->get_sprite("back_patterns");
+	const Sprite *sky=spr_coll->get_sprite("title_sky");
 	const Sprite *back_selected=spr_coll->get_sprite("back_pattern_selected");
 
 	SDL_Event event;
@@ -100,6 +101,7 @@ void CombinaisonScreen::display_combinaisons(SDL_Surface *screen) {
 
 		//background
 		fill_rect_opengl(0,0,SCREEN_W,SCREEN_H,1,1,0,1);
+		sky->draw(0,0);
 		back->draw(0,0);
 		
 		//menu

@@ -80,6 +80,7 @@ Following files are under both GPLv2 and CC-BY-SAv3, copyrighted Surt and Skorpi
 ./anims/veteran/walking03.png
 ./anims/veteran/walking04.png
 ./anims/veteran/walking05.png
+sprites/units/veteran_cadaver.png
 (these are renders of the knight 3D model of OpenDungeon)
 
 Following files are under GNU GPL 2.0, GNU GPL 3.0 and CC-BY-SA 3.0 copyrighted Daniel Gregory Benoy :
@@ -96,6 +97,7 @@ Following files are under GPLv2 :
 #	modified:   anims/dragon/fly04.bmp
 #	modified:   anims/dragon/fly05.bmp
 #	modified:   anims/dragon/fly06.bmp
+sprites/units/dragon_dead.bmp
 #	modified:   anims/golem/fight00.bmp
 #	modified:   anims/golem/fight01.bmp
 #	modified:   anims/golem/fight02.bmp
@@ -115,7 +117,6 @@ Following files are under GPLv2 :
 #	modified:   sprites/units/druid.bmp
 #	modified:   sprites/units/plant.bmp
 #	modified:   sprites/units/plant_dead.bmp
-
 #	modified:   sprites/dragon.bmp
 #	modified:   sprites/druid.bmp
 #	modified:   sprites/fire.bmp
@@ -170,6 +171,7 @@ The following images are from Battle for Wesnoth :
 #	modified:   anims/dragon/fly01.bmp
 #	modified:   anims/dragon/fly02.bmp
 #	modified:   anims/dragon/fly03.bmp
+sprites/units/dragon_dead.bmp
 #	modified:   anims/golem/fight00.bmp
 #	modified:   anims/golem/fight01.bmp
 #	modified:   anims/golem/fight02.bmp
