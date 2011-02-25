@@ -20,10 +20,12 @@ The resulting sprites are therefor under GPLv2
 
 
 Following files are under both GPLv2+ and CC-BY-SA, copyrighted Côme BERNIGAUD :
-#	modified:   sprites/any.bmp
-#	modified:   sprites/select.bmp
-#	modified:   xcf/druid_unit.xcf
-#	modified:   sprites/title/foreground.png
+sprites/any.bmp
+sprites/select.bmp
+xcf/druid_unit.xcf
+sprites/title/foreground.png
+and
+sprites/title/back_pattern_selected.png using http://opengameart.org/content/31-high-res-wood-texture-photos by Bart K.
 
 Following files are under both GPLv2+ and CC-BY-SA, copyrighted Grégoire BERNIGAUD :
 #	modified:   sprites/title/castle.png
@@ -41,6 +43,13 @@ Following files are under CC-BY-SA 3.0, copyrighted Côme BERNIGAUD(rendering), 
 sources/xcf/logo.blend
 Based on this : 
 http://opengameart.org/content/medieval-props-textured from pfunked
+
+These file are under CC-BY-SA 3.0, copyrighted Grégoire BERNIGAUD :
+sprites/title/fond_pattern.png
+xcf/pancarte2.blend
+xcf/fondPatterns.png
+Using textures from http://opengameart.org/content/31-high-res-wood-texture-photos
+CC-BY 3.0, copyrighted Bart K.
 
 Following files are under both GPLv2+ and CC-BY-SA, copyrighted jastew78 :
 #	xcf/chain.gif

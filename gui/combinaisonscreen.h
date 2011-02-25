@@ -27,6 +27,7 @@ public:
 	~CombinaisonScreen();
 	void display_combinaisons(SDL_Surface *screen);
 private:
+	const SpriteCollection *spr_coll;
 	typedef std::vector<const Combinaison*> Combinaisons;
 	struct CombinaisonSprite {
 		const Sprite *name_normal_sprite;

@@ -33,6 +33,8 @@
 #define COMBI_BOTTOM_Y 300
 
 CombinaisonScreen::CombinaisonScreen(const SpriteCollection *spr_coll,const CombinaisonCollection *cmb_coll,const std::string &ttf_path,TextureIds ids) {
+	this->spr_coll=spr_coll;
+	
 	//font creation
 	TTF_Font *normal_font=TTF_OpenFont(ttf_path.c_str(),COMBI_NAME_NORMAL_H);
 	TTF_Font *selected_font=TTF_OpenFont(ttf_path.c_str(),COMBI_NAME_SELECTED_H);
@@ -88,6 +90,9 @@ CombinaisonScreen::~CombinaisonScreen() {
 void CombinaisonScreen::display_combinaisons(SDL_Surface *screen) {
 	Uint32 ticks=SDL_GetTicks();
 	CombinaisonSprites::const_iterator current=combinaison_sprites.begin();
+	
+	const Sprite *back=spr_coll->get_sprite("back_patterns");
+	const Sprite *back_selected=spr_coll->get_sprite("back_pattern_selected");
 
 	SDL_Event event;
 	int frame_count=0;
@@ -95,14 +100,20 @@ void CombinaisonScreen::display_combinaisons(SDL_Surface *screen) {
 
 		//background
 		fill_rect_opengl(0,0,SCREEN_W,SCREEN_H,1,1,0,1);
-
+		back->draw(0,0);
+		
 		//menu
-		int y=(SCREEN_H - combinaison_sprites.size()*COMBI_SPACING)/2;
+		int y=(SCREEN_H - combinaison_sprites.size()*COMBI_SPACING)/2, y_current;
 		for (CombinaisonSprites::const_iterator iter=combinaison_sprites.begin(); iter!=combinaison_sprites.end(); iter++) {
 			if (iter!=current) iter->second->name_normal_sprite->draw((COMBI_RIGHT_X-iter->second->name_normal_sprite->w)/2,y);
-			else iter->second->name_selected_sprite->draw((COMBI_RIGHT_X-iter->second->name_selected_sprite->w)/2,y-(COMBI_NAME_SELECTED_H-COMBI_NAME_NORMAL_H)/2);
+			else {
+				y_current=y;
+			}
 			y+=COMBI_SPACING;
 		}
+		back_selected->draw((COMBI_RIGHT_X-back_selected->w)/2,y_current-(back_selected->h-COMBI_NAME_NORMAL_H)/2);
+		current->second->name_selected_sprite->draw((COMBI_RIGHT_X-current->second->name_selected_sprite->w)/2,y_current-(COMBI_NAME_SELECTED_H-COMBI_NAME_NORMAL_H)/2);
+
 
 		//main game sprite
 		current->second->game_sprite->draw((COMBI_RIGHT_X+(SCREEN_W-COMBI_RIGHT_X-current->second->game_sprite->w)/2),(COMBI_BOTTOM_Y-current->second->game_sprite->h)/2);
