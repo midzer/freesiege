@@ -59,7 +59,11 @@ Following file are under CC-BY-SA, copyrighted Richard James :
 sprites/ram.bmp
 xcf/ram.png
 anims/ram/walking00.png
+anims/ram/walking01.png
+anims/ram/walking02.png
 anims/ram/fighting00.png
+anims/ram/fighting01.png
+anims/ram/fighting02.png
 
 Following files are under both GPLv2 and CC-BY-SAv3, copyrighted Surt and Skorpio :
 ./anims/veteran/death01.png
