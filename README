@@ -57,13 +57,17 @@ http://opengameart.org/content/chain-tiles
 
 Following file are under CC-BY-SA, copyrighted Richard James :
 sprites/ram.bmp
+xcf/ram-broken.png
 xcf/ram.png
+xcf/ram_walking.xcf
 anims/ram/walking00.png
 anims/ram/walking01.png
 anims/ram/walking02.png
+anims/ram/walking03.png
 anims/ram/fighting00.png
 anims/ram/fighting01.png
 anims/ram/fighting02.png
+sprites/units/ram_cadaver.png
 
 Following files are under both GPLv2 and CC-BY-SAv3, copyrighted Surt and Skorpio :
 ./anims/veteran/death01.png
