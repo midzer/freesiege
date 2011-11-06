@@ -105,7 +105,7 @@ Following files are under GPLv2 :
 #	modified:   anims/dragon/fly04.bmp
 #	modified:   anims/dragon/fly05.bmp
 #	modified:   anims/dragon/fly06.bmp
-sprites/units/dragon_dead.bmp
+		    sprites/units/dragon_dead.bmp
 #	modified:   anims/golem/fight00.bmp
 #	modified:   anims/golem/fight01.bmp
 #	modified:   anims/golem/fight02.bmp
@@ -117,6 +117,7 @@ sprites/units/dragon_dead.bmp
 #	deleted:    anims/golem/walk03.bmp
 #	deleted:    anims/golem/walk04.bmp
 #	deleted:    anims/golem/walk05.bmp
+		    sprites/units/golem_cadaver.bmp
 #	modified:   anims/plant/fight00.bmp
 #	modified:   anims/plant/fight01.bmp
 #	modified:   anims/plant/fight02.bmp
@@ -191,6 +192,8 @@ sprites/units/dragon_dead.bmp
 #	deleted:    anims/golem/walk03.bmp
 #	deleted:    anims/golem/walk04.bmp
 #	deleted:    anims/golem/walk05.bmp
+#	deleted:    anims/golem/walk04.bmp
+		    sprites/units/golem_cadaver.bmp
 #	modified:   anims/plant/fight00.bmp
 #	modified:   anims/plant/fight01.bmp
 #	modified:   anims/plant/fight02.bmp
@@ -200,6 +203,13 @@ sprites/units/dragon_dead.bmp
 
 The image sprite/veteran.bmp is under GPLv2, from here : http://opengameart.org/content/imperial-guard
 Its source is in xcf/veteran.xcf
+
+Following sprites are under CC-BY 3.0 by Scribe from here : http://opengameart.org/content/cavalry-sprite-for-freesiege
+anims/knight/knight_walk00.png
+anims/knight/knight_walk01.png
+anims/knight/knight_walk02.png
+anims/knight/knight_walk03.png
+sprites/units/knight_cadaver.png
 
 The font Swift is under GPLv2.
 
