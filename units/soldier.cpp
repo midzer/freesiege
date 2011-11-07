@@ -141,8 +141,8 @@ void Soldier::draw() {
 		else anim_soldier.get_next_bitmap()->draw_flip_h(x,y);
 		break;
 	case FIGHT:
-		if (player==PLAYER_1) anim_soldier_fight.get_next_bitmap()->draw(x-6,y-6);
-		else anim_soldier_fight.get_next_bitmap()->draw_flip_h(x-4,y-6);
+		if (player==PLAYER_1) anim_soldier_fight.get_next_bitmap()->draw(x-8,y-11);
+		else anim_soldier_fight.get_next_bitmap()->draw_flip_h(x-8,y-11);
 		break;	
 	case CADAVER:
 		bit_soldier_dead->draw(x-4,BattleField::BaseY-15);

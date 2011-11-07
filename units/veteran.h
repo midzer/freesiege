@@ -31,8 +31,8 @@ public:
     static const int Life=60;
     static const int Damage=8;
     static const int PlayerDamage=16;
-    static const float W=61;
-    static const float H=63;
+    static const float W=63;
+    static const float H=62;
     static const float DX=1;
 private:
 	typedef enum {STOP,WALK,FIGHT,CADAVER} State;

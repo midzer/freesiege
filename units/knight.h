@@ -32,7 +32,7 @@ public:
     static const int Damage=8;
     static const int PlayerDamage=8;
     static const float W=60;
-    static const float H=50;
+    static const float H=59;
     static const float DX=4;
 private:
 	typedef enum {FIGHT,WALK,CADAVER} State;

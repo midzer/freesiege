@@ -69,6 +69,22 @@ anims/ram/fighting01.png
 anims/ram/fighting02.png
 sprites/units/ram_cadaver.png
 
+Following sprites are under cc-by 3.0/cc-by-sa 3.0+/gpl2+
+Original graphics: Mandi Paugh
+Slight editing to suit FreeSiege: Iwan 'qubodup' Gabovitch
+this is a combination of http://opengameart.org/content/star-fighter-2
+and http://opengameart.org/content/sword-sprite
+./anims/soldier/fight00.png
+./anims/soldier/fight01.png
+./anims/soldier/fight02.png
+./anims/soldier/fight03.png
+./anims/soldier/walking00.png
+./anims/soldier/walking01.png
+./anims/soldier/walking02.png
+./anims/soldier/walking03.png
+sprites/units/soldier_cadaver.png
+
+
 Following files are under both GPLv2 and CC-BY-SAv3, copyrighted Surt and Skorpio :
 ./anims/veteran/death01.png
 ./anims/veteran/death02.png
