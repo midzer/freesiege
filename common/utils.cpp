@@ -84,9 +84,9 @@ std::string get_base_dir() {
 	return std::string("./");
 }
 #else
-#ifdef FREESIEGE_ISINSTALLED
+#ifdef FREESIEGE_DATA_DIR
 std::string get_base_dir() {
-	return std::string("/usr/share/freesiege");
+	return std::string(FREESIEGE_DATA_DIR);
 }
 #else
 std::string get_base_dir() {

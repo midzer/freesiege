@@ -119,9 +119,11 @@ void GameScreen::init_game() {
 		case AI:
 			boards.first = new BoardSurvivor(spr_coll,cmb_coll,battlefield,PLAYER_1,base_speed);
 			break;
+#ifdef NET_SUPPORT
 		case REMOTE:
 			boards.first = new BoardNetwork(spr_coll,cmb_coll,battlefield,PLAYER_1);
 			break;
+#endif
 		case SERVER:
 			boards.first = NULL;
 			break;
@@ -134,9 +136,11 @@ void GameScreen::init_game() {
 		case AI:
 			boards.second = new BoardSurvivor(spr_coll,cmb_coll,battlefield,PLAYER_2,base_speed);
 			break;
+#ifdef NET_SUPPORT
 		case REMOTE:
 			boards.second = new BoardNetwork(spr_coll,cmb_coll,battlefield,PLAYER_1);
 			break;
+#endif
 		case SERVER:
 			boards.second = NULL;
 			break;
@@ -228,9 +232,11 @@ void GameScreen::display_game(SDL_Surface *screen) {
 				quit=true;
 			}
 			
-			if(mode==CLIENT)
+#ifdef NET_SUPPORT
+			if(mode==CLIENT) {
 				handleNetwork();
-			else {
+			} else {
+#endif
 				if (life_bars.first->get_life()<=0) {
 					winner=PLAYER_2;
 					quit=true;
@@ -238,7 +244,9 @@ void GameScreen::display_game(SDL_Surface *screen) {
 					winner=PLAYER_1;
 					quit=true;
 				}
+#ifdef NET_SUPPORT
 			}
+#endif
 
 			while (ticks>(SDL_GetTicks()-1000/FPS)) SDL_Delay(3);
 			ticks=SDL_GetTicks();
@@ -279,7 +287,7 @@ void GameScreen::show_final_screen(SDL_Surface *screen) {
 	}
 	
 	Sprite *go_sprite = NULL,*ko_sprite = NULL,*score_sprite = NULL;
-	bool ko;
+	bool ko = false;
 	if(mode==SURVIVOR) {
 		//render score
 		SDL_Surface *score_surf=TTF_RenderText_Solid(font,("Level " + number_as_roman(boards.second->getLevel())+" cleared!!!").c_str(),color);
@@ -390,7 +398,9 @@ void GameScreen::show_final_screen(SDL_Surface *screen) {
 		ticks=SDL_GetTicks();
 	}
     
-    delete go_sprite,ko_sprite,score_sprite;
+    delete go_sprite;
+    delete ko_sprite;
+    delete score_sprite;
     
     if ( (winner==PLAYER_2) && (mode == SURVIVOR) ) quit_game=true;
 }
@@ -414,6 +424,8 @@ void GameScreen::set_ai_level(MenuScreen::AILEVEL ai_level)
       }
 }
 
+#ifdef NET_SUPPORT
 void GameScreen::handleNetwork() {
 	#warning non implémenté
 }
+#endif

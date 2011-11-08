@@ -41,7 +41,9 @@ public:
 	void init_game();
 	
 private:
+#ifdef NET_SUPPORT
 	void handleNetwork();
+#endif
 	void show_final_screen(SDL_Surface *screen);
 	
 	std::pair<PLAYERMODE,PLAYERMODE> mode_p;
