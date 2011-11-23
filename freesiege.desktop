@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=FreeSiege
+GenericName=An intense tetris-like wargame
+Version=1
+Type=Application
+Categories=Game;
+Icon=freesiege.png
+Exec=freesiege
+Encoding=UTF-8
+Terminal=false
