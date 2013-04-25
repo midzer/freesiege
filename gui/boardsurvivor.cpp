@@ -73,5 +73,4 @@ void BoardSurvivor::set_ai_level(MenuScreen::AILEVEL ai_level)
 
 void BoardSurvivor::hasLost() {
 	level++;
-	cout << "OLOL" << level << endl;
 }
