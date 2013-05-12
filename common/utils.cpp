@@ -17,6 +17,11 @@
 //
 #include "utils.h"
 #include <iostream>
+#ifndef WIN32
+#ifndef FREESIEGE_DATA_DIR
+#include <unistd.h>
+#endif
+#endif
 
 using namespace std;
 
