@@ -28,10 +28,10 @@ public:
 	virtual void handle_message(const Message &mess,MessageQueue *mess_queue);
 	virtual void draw();
 
-    static const float Damage=3;
-    static const float W=100;
-    static const float H=40;
-    static const int SpriteNumber=6; 
+    static constexpr float Damage=3;
+    static constexpr float W=100;
+    static constexpr float H=40;
+    static constexpr int SpriteNumber=6;
 private:
 	bool init;
 	const Sprite *bit_explosion_a;

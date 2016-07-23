@@ -28,12 +28,12 @@ public:
 	virtual void handle_message(const Message &mess,MessageQueue *mess_queue);
 	virtual void draw();
 
-    static const float X=2;
-    static const float Y=80;
+    static constexpr float X=2;
+    static constexpr float Y=80;
 private:
 	typedef enum {INIT,WAIT,SHOOTED} State;
 	State state;
-	
+
 	const Sprite *bit_druid;
 };
 

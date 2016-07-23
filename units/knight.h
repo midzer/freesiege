@@ -28,12 +28,12 @@ public:
 	virtual void handle_message(const Message &mess,MessageQueue *mess_queue);
 	virtual void draw();
 
-    static const int Life=50;
-    static const int Damage=8;
-    static const int PlayerDamage=8;
-    static const float W=60;
-    static const float H=59;
-    static const float DX=4;
+    static constexpr int Life=50;
+    static constexpr int Damage=8;
+    static constexpr int PlayerDamage=8;
+    static constexpr float W=60;
+    static constexpr float H=59;
+    static constexpr float DX=4;
 private:
 	typedef enum {FIGHT,WALK,CADAVER} State;
 

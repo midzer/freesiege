@@ -30,11 +30,11 @@ public:
 	virtual void draw();
 	static void reset_hasplant();
 
-    static const int Life=100;
-    static const int Damage=12;
-    static const float W=69;
-    static const float H=64;
-    static const float X=90;
+    static constexpr int Life=100;
+    static constexpr int Damage=12;
+    static constexpr float W=69;
+    static constexpr float H=64;
+    static constexpr float X=90;
 private:
 	typedef enum {NORMAL,FIGHT,CADAVER} State;
 

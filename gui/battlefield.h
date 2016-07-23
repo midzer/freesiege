@@ -30,9 +30,9 @@ public:
 	void draw();
 	void spawn(UNIT_ID name,PLAYER player,float x=0);
 
-    static const float CastleW=80;
-    static const float CastleH=180;
-    static const float BaseY=600-180+155;
+    static constexpr float CastleW=80;
+    static constexpr float CastleH=180;
+    static constexpr float BaseY=600-180+155;
 
     int get_unit_count(PLAYER);
     int get_nonplant_unit_count(PLAYER);
