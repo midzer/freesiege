@@ -52,7 +52,7 @@ public:
 		SpriteVector::const_reverse_iterator iter_backward;
 	};
 
-	Anim(const std::string &path,int n_frames,const std::string &ext,TextureIds first_id);
+	Anim(const std::string &path,int n_frames,const std::string &ext,SDL_Renderer* sdlRenderer);
 	~Anim();
 	CycleIterator get_cycle_iterator(float speed) const;
 	ForwardBackwardIterator get_forward_backward_iterator(float speed) const;

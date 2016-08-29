@@ -19,76 +19,69 @@
 
 #include "param.h"
 
-Menu::Menu(const Titles &titles,const std::string &ttf_path,TextureIds ids) :ttf_path(ttf_path), ids(ids){
+Menu::Menu(const Titles &titles,TTF_Font *normal_font,TTF_Font *selected_font,SDL_Renderer* sdlRenderer) :normal_font(normal_font), selected_font(selected_font) {
 
 	int n=0; float y=MENU_Y;
+
 	for (Titles::const_iterator title=titles.begin(); title!=titles.end(); title++) {
-		TitleSprite* title_sprite=new TitleSprite();
-		title_sprite->n=n;
-		title_sprite->y=y;
-		title_sprite->title=*title;
-        title_sprite->spr_normal=NULL;
-        title_sprite->spr_selected=NULL;
-		
+		TitleSprite title_sprite;
+		title_sprite.n=n;
+		title_sprite.y=y;
+		title_sprite.title=*title;
+		title_sprite.spr_normal=NULL;
+		title_sprite.spr_selected=NULL;
+
 		title_sprites.push_back(title_sprite);
 		n++;
 		y+=MENU_SPACING;
 	}
-    update_text();
+	update_text(sdlRenderer);
 	//initialisation
 	selected=title_sprites.begin();
 }
 
 Menu::~Menu() {
 	for (TitleSprites::iterator iter=title_sprites.begin(); iter!=title_sprites.end(); iter++) {
-		delete (*iter)->spr_normal;
-		delete (*iter)->spr_selected;
-		delete *iter;
+		delete iter->spr_normal;
+		delete iter->spr_selected;
 	}
 }
 
-void Menu::update_text()
+void Menu::update_text(SDL_Renderer* sdlRenderer)
 {
-	//font creation
-	TTF_Font *normal_font=TTF_OpenFont(ttf_path.c_str(),MENU_NORMAL_H);
-	TTF_Font *selected_font=TTF_OpenFont(ttf_path.c_str(),MENU_SELECTED_H);
-	if (!normal_font || !selected_font) {
-		std::cerr<<"font "<<ttf_path<<" creation failed..."<<std::endl;
-		return;
-	}
-
 	SDL_Color normal_color=MENU_NORMAL_COLOR;
 	SDL_Color selected_color=MENU_SELECTED_COLOR;
 	SDL_Surface *normal_surf;
 	SDL_Surface *selected_surf;
-    TextureIds temp_ids=ids;
-	for (TitleSprites::const_iterator iter=title_sprites.begin(); iter!=title_sprites.end(); iter++) {
-		delete (*iter)->spr_normal;
-		delete (*iter)->spr_selected;
-		normal_surf=TTF_RenderText_Solid(normal_font,(*iter)->title.c_str(),normal_color);
-		selected_surf=TTF_RenderText_Solid(selected_font,(*iter)->title.c_str(),selected_color);
+	for (TitleSprites::iterator iter=title_sprites.begin(); iter!=title_sprites.end(); iter++) {
+		if (iter->title != iter->rendered_text) {
+			delete iter->spr_normal;
+			delete iter->spr_selected;
+			normal_surf=TTF_RenderText_Solid(normal_font,iter->title.c_str(),normal_color);
+			selected_surf=TTF_RenderText_Solid(selected_font,iter->title.c_str(),selected_color);
 
-		(*iter)->spr_normal=new Sprite(normal_surf,*temp_ids++);		
-		(*iter)->spr_selected=new Sprite(selected_surf,*temp_ids++);
+			iter->spr_normal	= new Sprite(sdlRenderer,normal_surf);
+			iter->spr_selected	= new Sprite(sdlRenderer,selected_surf);
 
-		SDL_FreeSurface(normal_surf);
-		SDL_FreeSurface(selected_surf);
+			SDL_FreeSurface(normal_surf);
+			SDL_FreeSurface(selected_surf);
+			iter->rendered_text = iter->title;
+		}
 	}
 
-	TTF_CloseFont(normal_font);
-	TTF_CloseFont(selected_font);
 }
 
-void Menu::draw() {
-    update_text();
+void Menu::draw(SDL_Renderer* sdlRenderer) {
+	update_text(sdlRenderer);
 	for (TitleSprites::const_iterator iter=title_sprites.begin(); iter!=title_sprites.end(); iter++) {
 		Sprite *spr_current;
-		if (iter!=selected) spr_current=(*iter)->spr_normal;
-		else {
-			spr_current=(*iter)->spr_selected;
-			fill_rect_opengl((SCREEN_W-spr_current->w)/2-5,(*iter)->y-spr_current->h/2,spr_current->w+10,spr_current->h-5,1,1,1,0.7);
+		if (iter!=selected) {
+			spr_current=iter->spr_normal;
+		} else {
+			spr_current=iter->spr_selected;
+			fill_rect(sdlRenderer, (SCREEN_W-spr_current->w)/2-5,iter->y-spr_current->h/2,spr_current->w+10,spr_current->h-5,1,1,1,0.7);
 		}
-		spr_current->draw((SCREEN_W-spr_current->w)/2,(*iter)->y-spr_current->h/2);
+		spr_current->draw((SCREEN_W-spr_current->w)/2,iter->y-spr_current->h/2);
 	}
 }
 
@@ -103,5 +96,5 @@ void Menu::previous() {
 }
 
 Menu::TitleSprite* Menu::get_selected() const {
-	return *selected;
+	return &*selected; //FIXME
 }

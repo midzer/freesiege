@@ -34,24 +34,27 @@ public:
 		int n;
 		float y;
 		std::string title;
+		std::string rendered_text;
 		Sprite *spr_normal;
 		Sprite *spr_selected;
 	};
 
-	Menu(const Titles &titles,const std::string &ttf_path,TextureIds ids);
+	Menu(const Titles &titles,TTF_Font *normal_font,TTF_Font *selected_font,SDL_Renderer* sdlRenderer);
 	~Menu();
-	void draw();
+	void draw(SDL_Renderer* sdlRenderer);
 	void next();
 	void previous();
 	TitleSprite* get_selected() const;
 private:
-	typedef std::vector<TitleSprite*> TitleSprites;
-	
-    void update_text();
-    std::string ttf_path;
+	typedef std::vector<TitleSprite> TitleSprites;
+
+	void update_text(SDL_Renderer* sdlRenderer);
+	std::string ttf_path;
 	TitleSprites title_sprites;
-	TitleSprites::const_iterator selected;
-    TextureIds ids;
+	TitleSprites::iterator selected;
+
+	TTF_Font *normal_font;
+	TTF_Font *selected_font;
 };
 
 #endif

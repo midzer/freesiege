@@ -28,24 +28,24 @@
 
 class GameScreen {
 public:
-	
+
 	enum PLAYERMODE {HUMAN, AI, REMOTE, SERVER, AUTO};
 	enum GAMEMODE {VERSUS, SURVIVOR, CLIENT};
 	//SURVIVOR means the left player have to survive the right one.
-	
-	GameScreen(const SpriteCollection *spr_coll,const CombinaisonCollection *cmb_coll,const std::string &ttf_path,TextureIds ids,Background *background,MusicCollection *music_coll,GAMEMODE mode,PLAYERMODE modep1=AUTO,PLAYERMODE modep2=AUTO);
+
+	GameScreen(const SpriteCollection *spr_coll,const CombinaisonCollection *cmb_coll,const std::string &ttf_path,SDL_Renderer* sdlRenderer,Background *background,MusicCollection *music_coll,GAMEMODE mode,PLAYERMODE modep1=AUTO,PLAYERMODE modep2=AUTO);
 	~GameScreen();
-	void display_game(SDL_Surface *screen);
-	
+	void display_game(SDL_Renderer *sdlRenderer, SDL_Window *sdlWindow);
+
 	void set_ai_level(MenuScreen::AILEVEL ai_level);
 	void init_game();
-	
+
 private:
 #ifdef NET_SUPPORT
 	void handleNetwork();
 #endif
-	void show_final_screen(SDL_Surface *screen);
-	
+	void show_final_screen(SDL_Renderer *sdlRenderer, SDL_Window *sdlWindow);
+
 	std::pair<PLAYERMODE,PLAYERMODE> mode_p;
 	GAMEMODE mode;
 
@@ -53,18 +53,18 @@ private:
 	int p1_win;
 	int p2_win;
 	bool quit_game;
-	
+
 	/* SURVIVOR SPECIFICS */
     int level;
     int base_speed;
-	TextureId go_id,perfect_id,ko_id;
+	//~ TextureId go_id,perfect_id,ko_id;
     /* ------------------ */
-	
+
 	std::pair<LifeBar*,LifeBar*> life_bars;
 	Foreground* foreground;
 	BattleField* battlefield;
 	std::pair<BoardAbstract*,BoardAbstract*> boards;
-	
+
 	const SpriteCollection *spr_coll;
 	const CombinaisonCollection *cmb_coll;
 	MusicCollection *music_coll;
@@ -79,8 +79,8 @@ private:
 	const Sprite *text_key_help;
 	Anim::CycleIterator skull;
 	Anim::CycleIterator hand;
-	TextureId score_id;
-	TextureId pause_id;
+	//~ TextureId score_id;
+	//~ TextureId pause_id;
 };
 
 #endif

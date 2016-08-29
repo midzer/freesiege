@@ -28,16 +28,16 @@ public:
 	~Board();
 	void logic(bool flowers);
 	virtual void draw();
-	
+
 protected:
-	SDLKey key_select;
-	SDLKey key_swap;
-	SDLKey key_validate;
-	SDLKey key_left;
-	SDLKey key_right;
-	SDLKey key_down;
-	SDLKey key_up;
-	
-};	
+	SDL_Scancode key_select;
+	SDL_Scancode key_swap;
+	SDL_Scancode key_validate;
+	SDL_Scancode key_left;
+	SDL_Scancode key_right;
+	SDL_Scancode key_down;
+	SDL_Scancode key_up;
+
+};
 
 #endif

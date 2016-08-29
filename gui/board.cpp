@@ -41,7 +41,7 @@ Board::Board(const SpriteCollection *spr_coll,const CombinaisonCollection *com_c
 }
 
 void Board::logic(bool flowers) {
-	Uint8 *key=SDL_GetKeyState(NULL);
+	const Uint8 *key=SDL_GetKeyboardState(NULL);
 
 	if (!this->cursor_changed) {
 		if (key[key_left]) this->cursor_j--;
@@ -50,12 +50,12 @@ void Board::logic(bool flowers) {
 		else if (key[key_down]) this->cursor_i++;
 		this->cursor_changed=key[key_left] || key[key_right] || key[key_down] || key[key_up];
 	}
-	
+
 	if (this->cursor_i>=BOARD_H) this->cursor_i=0;
 	else if (this->cursor_i<0) this->cursor_i=BOARD_H-1;
 	if (this->cursor_j>=BOARD_W) this->cursor_j=0;
 	else if (this->cursor_j<0) this->cursor_j=BOARD_W-1;
-	
+
 	char dummy;
 
 	switch (this->state) {
@@ -103,8 +103,8 @@ void Board::logic(bool flowers) {
 
 void Board::draw() {
 	BoardAbstract::draw();
-	
-	Uint8 *key=SDL_GetKeyState(NULL);
+
+	const Uint8 *key=SDL_GetKeyboardState(NULL);
 	this->state_changed=this->state_changed && (key[key_select] || key[key_swap] || key[key_validate]); //reset state changed
 	this->cursor_changed=this->cursor_changed && (key[key_left] || key[key_right] || key[key_down] || key[key_up]); //reset cursor changed
 }

@@ -17,12 +17,12 @@
 //
 #include "spritecollection.h"
 
-SpriteCollection::SpriteCollection(const std::string &spr_path,const std::string &anim_path,const std::string &base_dir,TextureIds ids) {
-	load_sprites(spr_path,base_dir,ids);
-	load_anim(anim_path,base_dir,ids+100);
+SpriteCollection::SpriteCollection(const std::string &spr_path,const std::string &anim_path,const std::string &base_dir,SDL_Renderer* sdlRenderer) {
+	load_sprites(spr_path,base_dir,sdlRenderer);
+	load_anim(anim_path,base_dir,sdlRenderer);
 }
 
-void SpriteCollection::load_sprites(const std::string &path,const std::string &base_dir,TextureIds ids) {
+void SpriteCollection::load_sprites(const std::string &path,const std::string &base_dir,SDL_Renderer* sdlRenderer) {
 	//loading sprites
 	std::ifstream file(path.c_str());
 	if (file.rdstate()) {
@@ -34,7 +34,7 @@ void SpriteCollection::load_sprites(const std::string &path,const std::string &b
 	std::string name;
 	std::string sprite_file;
 	std::string::size_type pos;
-	
+
 	file>>line;
 	int c=0;
 	SDL_Surface *sprite;
@@ -46,16 +46,17 @@ void SpriteCollection::load_sprites(const std::string &path,const std::string &b
 				name=line.substr(0,pos);
 				sprite_file=line.substr(pos+1);
 
-				sprite=load_surface(base_dir+sprite_file);
-				if (sprite) {
-					spr_coll[name]=new Sprite(sprite,*ids++);
-				} else std::cerr<<"error loading sprite"<<sprite_file<<" in "<<path<<":"<<c<<std::endl;
+				try {
+					spr_coll[name]=new Sprite(sdlRenderer, base_dir+sprite_file);
+				} catch(std::string error) {
+					std::cerr<<"error loading sprite"<<sprite_file<<" in "<<path<<":"<<c<<std::endl;
+				}
 			} else std::cerr<<"bad line "<<path<<":"<<c<<std::endl; }
 		file>>line;
 	}
 }
 
-void SpriteCollection::load_anim(const std::string &path,const std::string &base_dir,TextureIds ids) {
+void SpriteCollection::load_anim(const std::string &path,const std::string &base_dir,SDL_Renderer* sdlRenderer) {
 	//loading anims
 	std::ifstream file(path.c_str());
 	if (file.rdstate()) {
@@ -69,7 +70,7 @@ void SpriteCollection::load_anim(const std::string &path,const std::string &base
 	std::string anim_ext;
 	int n_frames;
 	std::string::size_type pos;
-	
+
 	file>>line;
 	int c=0;
 	Anim *anim;
@@ -104,11 +105,10 @@ void SpriteCollection::load_anim(const std::string &path,const std::string &base
 
 		//extension
 		anim_ext=line.substr(pos+1);
-		
-		anim=new Anim(base_dir+anim_prefix,n_frames,anim_ext,ids);
+
+		anim=new Anim(base_dir+anim_prefix,n_frames,anim_ext,sdlRenderer);
 		if (anim->is_valid()) {
 			anim_coll[name]=anim;
-			ids+=anim->size();
 		}
 		else delete anim;
 		file>>line;
@@ -148,7 +148,7 @@ Anim::ForwardBackwardIterator SpriteCollection::get_anim_forward_backward_iterat
 }
 
 std::ostream &operator<<(std::ostream &os,const SpriteCollection &collection) {
-	if (!collection.anim_coll.empty()) { 
+	if (!collection.anim_coll.empty()) {
 		SpriteCollection::AnimColl::const_iterator anim_iter=collection.anim_coll.begin();
 		os<<collection.anim_coll.size()<<" anims:"<<anim_iter->first<<"("<<anim_iter->second->size()<<")";
 		anim_iter++;

@@ -26,13 +26,12 @@ class LifeBar {
 public:
 	LifeBar(const SpriteCollection *spr_coll,PLAYER player);
 	~LifeBar();
-	void draw();
+	void draw(SDL_Renderer* sdlRenderer);
 	void damage(int a);
 	int get_life() const;
 private:
 	const Sprite *border;
 
-	void compute();
 	float life;
 	float recov_life;
 	float old_life;

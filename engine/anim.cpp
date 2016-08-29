@@ -74,17 +74,16 @@ Sprite *Anim::ForwardBackwardIterator::get_next_bitmap() {
 	}
 	return current;
 }
-		
+
 void Anim::ForwardBackwardIterator::set_speed(float speed) { this->speed = speed; }
 bool Anim::ForwardBackwardIterator::is_valid() const { return vect!=NULL; }
 
 //Anim
-Anim::Anim(const std::string &path,int n_frames,const std::string &ext,TextureIds first_id) {
+Anim::Anim(const std::string &path,int n_frames,const std::string &ext,SDL_Renderer* sdlRenderer) {
 	vect=new SpriteVector;
 	valid=true;
 
 	std::ostringstream full_path;
-	SDL_Surface *frame;
 	Sprite *sprite;
 
 	for (int n=0; n<n_frames; n++) {
@@ -93,12 +92,10 @@ Anim::Anim(const std::string &path,int n_frames,const std::string &ext,TextureId
 		if (n<=9) full_path<<"0";
 		full_path<<n<<"."<<ext;
 
-		frame=load_surface(full_path.str());
-		if (frame) {
-			sprite=new Sprite(frame,*first_id++);
-			SDL_FreeSurface(frame);
+		try {
+			sprite=new Sprite(sdlRenderer, full_path.str());
 			vect->push_back(sprite);
-		} else {
+		} catch (std::string) {
 			valid=false;
 			std::cerr<<"error loading anim frame "<<full_path.str()<<std::endl;
 		}

@@ -39,23 +39,23 @@
 
 class GameClient {
 public:
-	
+
 	GameClient(const SpriteCollection *spr_coll,const CombinaisonCollection *cmb_coll,const std::string &ttf_path,TextureIds ids,Background *background,MusicCollection *music_coll);
 	~GameClient();
-	//~ void display_game(SDL_Surface *screen);
-	
+	//~ void display_game(SDL_Renderer *sdlRenderer);
+
 	//~ void set_ai_level(MenuScreen::AILEVEL ai_level);
 	void init_game();
-	
+
 private:
 	/* sure things */
 	PLAYER me; // am I right or left?
 	Board* Keyboard;
-	
+
 	/* here? */
 	void handleNetwork();
-	void show_final_screen(SDL_Surface *screen);
-	
+	void show_final_screen(SDL_Renderer *sdlRenderer);
+
 	//~ std::pair<PLAYERMODE,PLAYERMODE> mode_p;
 	//~ GAMEMODE mode;
 
@@ -63,12 +63,12 @@ private:
 	int p1_win;
 	int p2_win;
 	bool quit_game;
-	
+
 	std::pair<LifeBar*,LifeBar*> life_bars;
 	Foreground* foreground;
 	BattleField* battlefield;
 	//~ std::pair<BoardAbstract*,BoardAbstract*> boards;
-	
+
 	const SpriteCollection *spr_coll;
 	const CombinaisonCollection *cmb_coll;
 	MusicCollection *music_coll;

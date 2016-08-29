@@ -32,9 +32,9 @@
 #define COMBI_RIGHT_X 300
 #define COMBI_BOTTOM_Y 300
 
-CombinaisonScreen::CombinaisonScreen(const SpriteCollection *spr_coll,const CombinaisonCollection *cmb_coll,const std::string &ttf_path,TextureIds ids) {
+CombinaisonScreen::CombinaisonScreen(const SpriteCollection *spr_coll,const CombinaisonCollection *cmb_coll,const std::string &ttf_path,SDL_Renderer* sdlRenderer) {
 	this->spr_coll=spr_coll;
-	
+
 	//font creation
 	TTF_Font *normal_font=TTF_OpenFont(ttf_path.c_str(),COMBI_NAME_NORMAL_H);
 	TTF_Font *selected_font=TTF_OpenFont(ttf_path.c_str(),COMBI_NAME_SELECTED_H);
@@ -42,7 +42,7 @@ CombinaisonScreen::CombinaisonScreen(const SpriteCollection *spr_coll,const Comb
 		std::cerr<<"font "<<ttf_path<<" creation failed..."<<std::endl;
 		return;
 	}
-	
+
 	//initialize combinaisons sprites
 	SDL_Color name_color=COMBI_NAME_COLOR;
 	for (CombinaisonCollection::Names::const_iterator name=cmb_coll->names.begin(); name!=cmb_coll->names.end(); name++) {
@@ -50,8 +50,8 @@ CombinaisonScreen::CombinaisonScreen(const SpriteCollection *spr_coll,const Comb
 
 		SDL_Surface *name_normal_surf=TTF_RenderText_Solid(normal_font,(*name)->c_str(),name_color);
 		SDL_Surface *name_selected_surf=TTF_RenderText_Solid(selected_font,(*name)->c_str(),name_color);
-		combinaison_sprite->name_normal_sprite=new Sprite(name_normal_surf,*ids++);
-		combinaison_sprite->name_selected_sprite=new Sprite(name_selected_surf,*ids++);
+		combinaison_sprite->name_normal_sprite=new Sprite(sdlRenderer,name_normal_surf);
+		combinaison_sprite->name_selected_sprite=new Sprite(sdlRenderer,name_selected_surf);
 		SDL_FreeSurface(name_normal_surf);
 		SDL_FreeSurface(name_selected_surf);
 
@@ -62,7 +62,7 @@ CombinaisonScreen::CombinaisonScreen(const SpriteCollection *spr_coll,const Comb
 
 	//push corresponding combinaisons
 	for (CombinaisonCollection::Coll::const_iterator combi=cmb_coll->coll.begin(); combi!=cmb_coll->coll.end(); combi++)
-	   combinaison_sprites[combi->second]->combinaisons.push_back(combi->first);	
+	   combinaison_sprites[combi->second]->combinaisons.push_back(combi->first);
 
 	for (CombinaisonSprites::const_iterator sprite=combinaison_sprites.begin(); sprite!=combinaison_sprites.end(); sprite++)
 		sprite->second->current_combinaison=sprite->second->combinaisons.begin();
@@ -87,10 +87,10 @@ CombinaisonScreen::~CombinaisonScreen() {
 	}
 }
 
-void CombinaisonScreen::display_combinaisons(SDL_Surface *screen) {
+void CombinaisonScreen::display_combinaisons(SDL_Renderer *sdlRenderer, SDL_Window *sdlWindow) {
 	Uint32 ticks=SDL_GetTicks();
 	CombinaisonSprites::const_iterator current=combinaison_sprites.begin();
-	
+
 	const Sprite *back=spr_coll->get_sprite("back_patterns");
 	const Sprite *sky=spr_coll->get_sprite("title_sky");
 	const Sprite *back_selected=spr_coll->get_sprite("back_pattern_selected");
@@ -100,10 +100,10 @@ void CombinaisonScreen::display_combinaisons(SDL_Surface *screen) {
 	while (true) {
 
 		//background
-		fill_rect_opengl(0,0,SCREEN_W,SCREEN_H,1,1,0,1);
+		fill_rect(sdlRenderer,0,0,SCREEN_W,SCREEN_H,1,1,0,1);
 		sky->draw(0,0);
 		back->draw(0,0);
-		
+
 		//menu
 		int y=(SCREEN_H - combinaison_sprites.size()*COMBI_SPACING)/2, y_current;
 		for (CombinaisonSprites::const_iterator iter=combinaison_sprites.begin(); iter!=combinaison_sprites.end(); iter++) {
@@ -150,8 +150,7 @@ void CombinaisonScreen::display_combinaisons(SDL_Surface *screen) {
 		}
 
 		//swap screens
-		SDL_GL_SwapBuffers();
-		SDL_Flip(screen);
+		SDL_RenderPresent(sdlRenderer);
 
 		//swap displayed combinaison
 		if (frame_count>=COMBI_COMBI_DELAY) {
@@ -164,30 +163,30 @@ void CombinaisonScreen::display_combinaisons(SDL_Surface *screen) {
 		while (SDL_PollEvent(&event)) {
 			switch (event.type) {
 			case SDL_KEYDOWN:
-				switch (event.key.keysym.sym) {
-				case SDLK_SPACE:
+				switch (event.key.keysym.scancode) {
+				case SDL_SCANCODE_SPACE:
 					frame_count=0;
 					current->second->current_combinaison++;
 					if (current->second->current_combinaison==current->second->combinaisons.end()) current->second->current_combinaison=current->second->combinaisons.begin();
 					break;
-				case SDLK_UP:
+				case SDL_SCANCODE_UP:
 					if (current==combinaison_sprites.begin()) current=combinaison_sprites.end();
 					current--;
 					break;
-				case SDLK_DOWN:
+				case SDL_SCANCODE_DOWN:
 					current++;
 					if (current==combinaison_sprites.end()) current=combinaison_sprites.begin();
 					break;
-				case SDLK_RETURN://FIXME debug
+				case SDL_SCANCODE_RETURN://FIXME debug
 					std::cout<<current->second->combinaisons.size()<<" "<<*current_combinaison<<std::endl;
 					break;
-				case SDLK_ESCAPE:
+				case SDL_SCANCODE_ESCAPE:
 					return;
 				default:
 					break;
 				}
 				break;
-			case SDL_QUIT:			
+			case SDL_QUIT:
 				return;
 				break;
 			default:

@@ -34,32 +34,31 @@ Uint32 counter_reset_callback(Uint32 interval,void *param) {
 	return interval;
 }
 
-SDL_Surface *screen;
+SDL_Renderer *sdlRenderer;
 int main(int argc, char* argv[]) {
 	init_random_gen();
 	//SDL init;
 	std::cout<<"init sdl"<<std::endl;
-	if (SDL_Init(SDL_INIT_AUDIO|SDL_INIT_VIDEO|SDL_OPENGL|SDL_INIT_TIMER)==-1) {
+	if (SDL_Init(SDL_INIT_AUDIO|SDL_INIT_VIDEO|SDL_INIT_TIMER)==-1) {
 		std::cerr<<"sdl init failed..."<<SDL_GetError()<<std::endl;
 		return 1;
 	}
-	
+
 	IMG_Init(IMG_INIT_PNG);
 
 	std::cout<<"init video"<<std::endl;
-	screen=SDL_SetVideoMode(SCREEN_W,SCREEN_H,SCREEN_DEPTH,SDL_OPENGL|SDL_DOUBLEBUF);
-	if (!screen) {
+	sdlRenderer=SDL_SetVideoMode(SCREEN_W,SCREEN_H,SCREEN_DEPTH,SDL_DOUBLEBUF);
+	if (!sdlRenderer) {
 		std::cerr<<"video init failed..."<<std::endl;
 		return 1;
 	}
 	SDL_WM_SetCaption("FrEEsIegE FiGHt",NULL);
-	TextureIds texture_ids=init_opengl(screen->w,screen->h,N_TEXTURE);
 
 	//object init
 	std::string base_dir=get_base_dir();
 	SpriteCollection spr_coll(base_dir+"sprites.cfg",base_dir+"anims.cfg",base_dir,texture_ids);
 	std::cout<<spr_coll<<std::endl;
-	
+
 	Background background(&spr_coll);
 	Foreground foreground(&spr_coll);
 	LifeBar life_bar1(&spr_coll,PLAYER_1);
@@ -75,69 +74,68 @@ int main(int argc, char* argv[]) {
 	Uint32 ticks=SDL_GetTicks();
 	while (!quit) {
 		//draw
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		SDL_RenderClear(sdlRenderer);
 		background.draw();
 		life_bar1.draw();
 		life_bar2.draw();
 		battlefield.refresh();
 		battlefield.draw();
 		foreground.draw();
-		SDL_GL_SwapBuffers();	
-		SDL_Flip(screen);
+		SDL_RenderPresent(sdlRenderer);
 		//logic
-		
+
 		while (SDL_PollEvent(&event)) {
 			switch (event.type) {
 			case SDL_KEYDOWN:
-				if (event.key.keysym.sym!=SDLK_ESCAPE) {
-				switch (event.key.keysym.sym) {
+				if (event.key.keysym.scancode!=SDL_SCANCODE_ESCAPE) {
+				switch (event.key.keysym.scancode) {
 				//unit spawn keys
-				case SDLK_a:
+				case SDL_SCANCODE_A:
 					battlefield.spawn(SOLDIER,PLAYER_1);
 					break;
-				case SDLK_q:
+				case SDL_SCANCODE_Q:
 					battlefield.spawn(SOLDIER,PLAYER_2);
 					break;
-				case SDLK_z:
+				case SDL_SCANCODE_Z:
 					battlefield.spawn(DRUID,PLAYER_1);
 					break;
-				case SDLK_s:
+				case SDL_SCANCODE_S:
 					battlefield.spawn(DRUID,PLAYER_2);
 					break;
-				case SDLK_e:
+				case SDL_SCANCODE_E:
 					battlefield.spawn(KNIGHT,PLAYER_1);
 					break;
-				case SDLK_d:
+				case SDL_SCANCODE_D:
 					battlefield.spawn(KNIGHT,PLAYER_2);
 					break;
-				case SDLK_r:
+				case SDL_SCANCODE_R:
 					battlefield.spawn(GOLEM,PLAYER_1);
 					break;
-				case SDLK_f:
+				case SDL_SCANCODE_F:
 					battlefield.spawn(GOLEM,PLAYER_2);
 					break;
-				case SDLK_t:
+				case SDL_SCANCODE_T:
 					battlefield.spawn(PLANT,PLAYER_1);
 					break;
-				case SDLK_g:
+				case SDL_SCANCODE_G:
 					battlefield.spawn(PLANT,PLAYER_2);
 					break;
-				case SDLK_y:
+				case SDL_SCANCODE_Y:
 					battlefield.spawn(DRAGON,PLAYER_1);
 					break;
-				case SDLK_h:
+				case SDL_SCANCODE_H:
 					battlefield.spawn(DRAGON,PLAYER_2);
 					break;
-				case SDLK_u:
+				case SDL_SCANCODE_U:
 					battlefield.spawn(FLOWER,PLAYER_2);
 					break;
-				case SDLK_j:
+				case SDL_SCANCODE_J:
 					battlefield.spawn(FLOWER,PLAYER_1);
 					break;
-				case SDLK_o:
+				case SDL_SCANCODE_O:
 					battlefield.spawn(VETERAN,PLAYER_2);
 					break;
-				case SDLK_l:
+				case SDL_SCANCODE_L:
 					battlefield.spawn(VETERAN,PLAYER_1);
 					break;
 				default:
@@ -145,7 +143,7 @@ int main(int argc, char* argv[]) {
 				}
 				break;
 				}
-			case SDL_QUIT:			
+			case SDL_QUIT:
 				quit=true;
 				break;
 			default:
@@ -155,9 +153,9 @@ int main(int argc, char* argv[]) {
 
 		while (ticks>(SDL_GetTicks()-1000/FPS)) SDL_Delay(3);
 		ticks=SDL_GetTicks();
-		
+
 		current_fps++;
-	}	
+	}
 
 	SDL_RemoveTimer(counter_reset_id);
 	SDL_DestroyMutex(counter_reset_mutex);

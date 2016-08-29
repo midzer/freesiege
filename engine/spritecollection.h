@@ -24,16 +24,16 @@ class SpriteCollection {
 friend std::ostream &operator<<(std::ostream &os,const SpriteCollection &collection);
 public:
 	typedef std::map<std::string,Sprite*> SprColl;
-	typedef std::map<std::string,Anim*> AnimColl;	
-	SpriteCollection(const std::string &spr_path,const std::string &anim_path,const std::string &base_dir,TextureIds ids);
+	typedef std::map<std::string,Anim*> AnimColl;
+	SpriteCollection(const std::string &spr_path,const std::string &anim_path,const std::string &base_dir,SDL_Renderer* sdlRenderer);
 	~SpriteCollection();
 	Sprite *get_sprite(const std::string &str) const;
 	Anim::CycleIterator get_anim_cycle_iterator(const std::string &str,float speed) const;
 	Anim::ForwardBackwardIterator get_anim_forward_backward_iterator(const std::string &str,float speed) const;
 private:
 	typedef std::map<std::string,SDL_Surface*> SurfColl;
-	void load_sprites(const std::string &path,const std::string &base_dir,TextureIds ids);
-	void load_anim(const std::string &path,const std::string &base_dir,TextureIds ids);
+	void load_sprites(const std::string &path,const std::string &base_dir,SDL_Renderer* sdlRenderer);
+	void load_anim(const std::string &path,const std::string &base_dir,SDL_Renderer* sdlRenderer);
 	SprColl spr_coll;
 	AnimColl anim_coll;
 };

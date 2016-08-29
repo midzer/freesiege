@@ -19,7 +19,7 @@
 #include "param.h"
 
 #define LIFE_Y 320
-#define LIFE_INNER_BORDER 3 
+#define LIFE_INNER_BORDER 3
 #define LIFE_W 360
 #define LIFE_H 39
 #define LIFE_BORDER 5
@@ -31,21 +31,9 @@ LifeBar::LifeBar(const SpriteCollection *spr_coll,PLAYER player) {
 	this->old_life=1.0;
 	this->player=player;
 	border=spr_coll->get_sprite("lifebar_border");
-	compute();
 }
 
 LifeBar::~LifeBar() {}
-
-void LifeBar::compute() {
-	if (life>0) {
-		int w=int(life*(LIFE_W-2*LIFE_INNER_BORDER));
-		if (player==PLAYER_2) {
-			fill_rect_opengl(LIFE_INNER_BORDER,LIFE_INNER_BORDER,w,LIFE_H-2*LIFE_INNER_BORDER,0,1,0);
-		} else {
-			fill_rect_opengl(LIFE_W-LIFE_INNER_BORDER-w,LIFE_INNER_BORDER,w,LIFE_H-2*LIFE_INNER_BORDER,0,1,0);
-		}
-	}
-}
 
 void LifeBar::damage(int a) {
 	life-=float(a)/LIFE_FACTOR;
@@ -54,19 +42,19 @@ void LifeBar::damage(int a) {
 
 int LifeBar::get_life() const { return int(life*LIFE_FACTOR); }
 
-void LifeBar::draw() {
+void LifeBar::draw(SDL_Renderer* sdlRenderer) {
 	if (recov_life>life) recov_life-=LIFE_DECREASE;
 	if (recov_life<life) recov_life=life;
 
 	int reco_w=int(recov_life*(LIFE_W-2*LIFE_INNER_BORDER));
 	int life_w=int(life*(LIFE_W-2*LIFE_INNER_BORDER));
 	if (player==PLAYER_2) {
-		fill_rect_opengl(SCREEN_W-LIFE_W+LIFE_INNER_BORDER-LIFE_BORDER,LIFE_Y+LIFE_INNER_BORDER,reco_w,LIFE_H-2*LIFE_INNER_BORDER,1,0,0);
-		fill_rect_opengl(SCREEN_W-LIFE_W+LIFE_INNER_BORDER-LIFE_BORDER,LIFE_Y+LIFE_INNER_BORDER,life_w,LIFE_H-2*LIFE_INNER_BORDER,0,1,0);
+		fill_rect(sdlRenderer,SCREEN_W-LIFE_W+LIFE_INNER_BORDER-LIFE_BORDER,LIFE_Y+LIFE_INNER_BORDER,reco_w,LIFE_H-2*LIFE_INNER_BORDER,1,0,0);
+		fill_rect(sdlRenderer,SCREEN_W-LIFE_W+LIFE_INNER_BORDER-LIFE_BORDER,LIFE_Y+LIFE_INNER_BORDER,life_w,LIFE_H-2*LIFE_INNER_BORDER,0,1,0);
 		border->draw(SCREEN_W-LIFE_W-LIFE_BORDER,LIFE_Y);
 	} else {
-		fill_rect_opengl(LIFE_W-LIFE_INNER_BORDER-reco_w+LIFE_BORDER,LIFE_Y+LIFE_INNER_BORDER,reco_w,LIFE_H-2*LIFE_INNER_BORDER,1,0,0);
-		fill_rect_opengl(LIFE_W-LIFE_INNER_BORDER-life_w+LIFE_BORDER,LIFE_Y+LIFE_INNER_BORDER,life_w,LIFE_H-2*LIFE_INNER_BORDER,0,1,0);
+		fill_rect(sdlRenderer,LIFE_W-LIFE_INNER_BORDER-reco_w+LIFE_BORDER,LIFE_Y+LIFE_INNER_BORDER,reco_w,LIFE_H-2*LIFE_INNER_BORDER,1,0,0);
+		fill_rect(sdlRenderer,LIFE_W-LIFE_INNER_BORDER-life_w+LIFE_BORDER,LIFE_Y+LIFE_INNER_BORDER,life_w,LIFE_H-2*LIFE_INNER_BORDER,0,1,0);
 		border->draw(LIFE_BORDER,LIFE_Y);
 	}
 }

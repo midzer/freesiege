@@ -19,7 +19,7 @@
 class Keys {
 	public:
 		enum KEY {SELECT, SWAP, VALIDATE, LEFT, RIGHT, DOWN, UP, NBKEYS};
-		Keys(SDLKey se,SDLKey sw,SDLKey va,SDLKey le,SDLKey ri,SDLKey d,SDLKey up) {
+		Keys(SDL_Scancode se,SDL_Scancode sw,SDL_Scancode va,SDL_Scancode le,SDL_Scancode ri,SDL_Scancode d,SDL_Scancode up) {
 			keys[SELECT] = se;
 			keys[SWAP] = sw;
 			keys[VALIDATE] = va;
@@ -28,7 +28,7 @@ class Keys {
 			keys[DOWN] = d;
 			keys[UP]= up;
 		};
-		SDLKey keys[NBKEYS];
+		SDL_Scancode keys[NBKEYS];
 		static std::string name(KEY key) {
 			switch(key) {
 				case SELECT: return "select";
@@ -55,7 +55,7 @@ class Options {
 		static bool soundOn();
 		static Keys player1keys;
 		static Keys player2keys;
-		static SDLKey pause_key;
+		static SDL_Scancode pause_key;
 	private:
 		static bool soundConfig;		//what is in the config file
 		static bool fullscreenConfig;	//what is in the config file

@@ -44,37 +44,29 @@ typedef TextureId* TextureIds;
 	#include <SDL_mixer.h>
 	#include <SDL_ttf.h>
 	#include <SDL_image.h>
-	#include <SDL_OpenGL.h>
 #else
-	#include <SDL/SDL.h>
-	#include <SDL/SDL_mixer.h>
-	#include <SDL/SDL_ttf.h>
-	#include <SDL/SDL_image.h>
-	#include <GL/gl.h>
+	#include <SDL2/SDL.h>
+	#include <SDL2/SDL_mixer.h>
+	#include <SDL2/SDL_ttf.h>
+	#include <SDL2/SDL_image.h>
 #endif
 
 
 
-#define P2_KEY_SELECT SDLK_o	//key used to select the first element
-#define P2_KEY_SWAP SDLK_o	//key used to select the second element and swap it with the first one
-#define P2_KEY_VALIDATE SDLK_p	//key used to validate combinaisons and to spawn units on the battlefield
-#define P2_KEY_LEFT SDLK_LEFT
-#define P2_KEY_RIGHT SDLK_RIGHT
-#define P2_KEY_DOWN SDLK_DOWN
-#define P2_KEY_UP SDLK_UP
+#define P2_KEY_SELECT SDL_SCANCODE_O	//key used to select the first element
+#define P2_KEY_SWAP SDL_SCANCODE_O	//key used to select the second element and swap it with the first one
+#define P2_KEY_VALIDATE SDL_SCANCODE_P	//key used to validate combinaisons and to spawn units on the battlefield
+#define P2_KEY_LEFT SDL_SCANCODE_LEFT
+#define P2_KEY_RIGHT SDL_SCANCODE_RIGHT
+#define P2_KEY_DOWN SDL_SCANCODE_DOWN
+#define P2_KEY_UP SDL_SCANCODE_UP
 
-#ifdef WIN32
-	#define P1_KEY_SELECT SDLK_q	//key used to select the first element
-	#define P1_KEY_SWAP SDLK_q	//key used to select the second element and swap it with the first one
-	#define P1_KEY_VALIDATE SDLK_w	//key used to validate combinaisons and to spawn units on the battlefield
-#else
-	#define P1_KEY_SELECT SDLK_a	//key used to select the first element
-	#define P1_KEY_SWAP SDLK_a	//key used to select the second element and swap it with the first one
-	#define P1_KEY_VALIDATE SDLK_z	//key used to validate combinaisons and to spawn units on the battlefield
-#endif
-#define P1_KEY_LEFT SDLK_s
-#define P1_KEY_RIGHT SDLK_f
-#define P1_KEY_DOWN SDLK_d
-#define P1_KEY_UP SDLK_e
+#define P1_KEY_SELECT SDL_SCANCODE_Q	//key used to select the first element
+#define P1_KEY_SWAP SDL_SCANCODE_Q	//key used to select the second element and swap it with the first one
+#define P1_KEY_VALIDATE SDL_SCANCODE_W	//key used to validate combinaisons and to spawn units on the battlefield
+#define P1_KEY_LEFT SDL_SCANCODE_S
+#define P1_KEY_RIGHT SDL_SCANCODE_F
+#define P1_KEY_DOWN SDL_SCANCODE_D
+#define P1_KEY_UP SDL_SCANCODE_E
 
 #endif

@@ -24,17 +24,17 @@
 class MenuScreen {
 public:
 	enum SELECTION {QUIT,TWO_PLAYERS,TRAINING,COMBINAISONS,EXHIBITION};
-	MenuScreen(const SpriteCollection *spr_coll,const std::string &ttf_path,TextureIds ids);
+	MenuScreen(const SpriteCollection *spr_coll,const std::string &ttf_path,SDL_Renderer *sdlRenderer);
 	~MenuScreen();
-	bool display_menu(SDL_Surface *screen,SELECTION &selection);
+	bool display_menu(SDL_Renderer *sdlRenderer,SDL_Window *sdlWindow,SELECTION &selection);
 
     //Options
     enum AILEVEL {EASY,NORMAL,HARD,EXTREME};
     AILEVEL ai_level;
 private:
-	void show_message(std::string msg);
-	void refresh_key_menu();
-	
+	Sprite* load_message(SDL_Renderer* sdlRenderer,std::string msg);
+	void refresh_key_menu(SDL_Renderer *sdlRenderer);
+
 	const SpriteCollection *spr_coll;
 	std::string ttf_path;
 	Menu *key_menu;
@@ -43,6 +43,9 @@ private:
 	typedef std::stack<Menu*> Menus;
 	Menus menus;
 	TextureIds ids;
+
+	TTF_Font *normal_font;
+	TTF_Font *selected_font;
 };
 
 #endif
