@@ -34,6 +34,7 @@ Uint32 counter_reset_callback(Uint32 interval,void *param) {
 	return interval;
 }
 
+SDL_Window *sdlWindow;
 SDL_Renderer *sdlRenderer;
 int main(int argc, char* argv[]) {
 	init_random_gen();
@@ -47,16 +48,18 @@ int main(int argc, char* argv[]) {
 	IMG_Init(IMG_INIT_PNG);
 
 	std::cout<<"init video"<<std::endl;
-	sdlRenderer=SDL_SetVideoMode(SCREEN_W,SCREEN_H,SCREEN_DEPTH,SDL_DOUBLEBUF);
-	if (!sdlRenderer) {
-		std::cerr<<"video init failed..."<<std::endl;
-		return 1;
+	SDL_CreateWindowAndRenderer(SCREEN_W, SCREEN_H, SDL_WINDOW_RESIZABLE, &sdlWindow, &sdlRenderer);
+
+	if (!sdlWindow || !sdlRenderer) {
+		fprintf(stderr, "SDL ERROR: %s\n", SDL_GetError());
+		exit(EXIT_FAILURE);
 	}
-	SDL_WM_SetCaption("FrEEsIegE FiGHt",NULL);
+	SDL_RenderSetLogicalSize(sdlRenderer, SCREEN_W, SCREEN_H);
+	SDL_SetWindowTitle(sdlWindow, "FreeSiege Fight test");
 
 	//object init
 	std::string base_dir=get_base_dir();
-	SpriteCollection spr_coll(base_dir+"sprites.cfg",base_dir+"anims.cfg",base_dir,texture_ids);
+	SpriteCollection spr_coll(base_dir+"sprites.cfg",base_dir+"anims.cfg",base_dir,sdlRenderer);
 	std::cout<<spr_coll<<std::endl;
 
 	Background background(&spr_coll);
@@ -74,10 +77,10 @@ int main(int argc, char* argv[]) {
 	Uint32 ticks=SDL_GetTicks();
 	while (!quit) {
 		//draw
-		SDL_RenderClear(sdlRenderer);
+		clear_screen(sdlRenderer);
 		background.draw();
-		life_bar1.draw();
-		life_bar2.draw();
+		life_bar1.draw(sdlRenderer);
+		life_bar2.draw(sdlRenderer);
 		battlefield.refresh();
 		battlefield.draw();
 		foreground.draw();
@@ -88,60 +91,60 @@ int main(int argc, char* argv[]) {
 			switch (event.type) {
 			case SDL_KEYDOWN:
 				if (event.key.keysym.scancode!=SDL_SCANCODE_ESCAPE) {
-				switch (event.key.keysym.scancode) {
-				//unit spawn keys
-				case SDL_SCANCODE_A:
-					battlefield.spawn(SOLDIER,PLAYER_1);
+					switch (event.key.keysym.scancode) {
+					//unit spawn keys
+					case SDL_SCANCODE_Q:
+						battlefield.spawn(SOLDIER,PLAYER_1);
+						break;
+					case SDL_SCANCODE_A:
+						battlefield.spawn(SOLDIER,PLAYER_2);
+						break;
+					case SDL_SCANCODE_W:
+						battlefield.spawn(DRUID,PLAYER_1);
+						break;
+					case SDL_SCANCODE_S:
+						battlefield.spawn(DRUID,PLAYER_2);
+						break;
+					case SDL_SCANCODE_E:
+						battlefield.spawn(KNIGHT,PLAYER_1);
+						break;
+					case SDL_SCANCODE_D:
+						battlefield.spawn(KNIGHT,PLAYER_2);
+						break;
+					case SDL_SCANCODE_R:
+						battlefield.spawn(GOLEM,PLAYER_1);
+						break;
+					case SDL_SCANCODE_F:
+						battlefield.spawn(GOLEM,PLAYER_2);
+						break;
+					case SDL_SCANCODE_T:
+						battlefield.spawn(PLANT,PLAYER_1);
+						break;
+					case SDL_SCANCODE_G:
+						battlefield.spawn(PLANT,PLAYER_2);
+						break;
+					case SDL_SCANCODE_Y:
+						battlefield.spawn(DRAGON,PLAYER_1);
+						break;
+					case SDL_SCANCODE_H:
+						battlefield.spawn(DRAGON,PLAYER_2);
+						break;
+					case SDL_SCANCODE_U:
+						battlefield.spawn(FLOWER,PLAYER_2);
+						break;
+					case SDL_SCANCODE_J:
+						battlefield.spawn(FLOWER,PLAYER_1);
+						break;
+					case SDL_SCANCODE_O:
+						battlefield.spawn(VETERAN,PLAYER_2);
+						break;
+					case SDL_SCANCODE_L:
+						battlefield.spawn(VETERAN,PLAYER_1);
+						break;
+					default:
+						break;
+					}
 					break;
-				case SDL_SCANCODE_Q:
-					battlefield.spawn(SOLDIER,PLAYER_2);
-					break;
-				case SDL_SCANCODE_Z:
-					battlefield.spawn(DRUID,PLAYER_1);
-					break;
-				case SDL_SCANCODE_S:
-					battlefield.spawn(DRUID,PLAYER_2);
-					break;
-				case SDL_SCANCODE_E:
-					battlefield.spawn(KNIGHT,PLAYER_1);
-					break;
-				case SDL_SCANCODE_D:
-					battlefield.spawn(KNIGHT,PLAYER_2);
-					break;
-				case SDL_SCANCODE_R:
-					battlefield.spawn(GOLEM,PLAYER_1);
-					break;
-				case SDL_SCANCODE_F:
-					battlefield.spawn(GOLEM,PLAYER_2);
-					break;
-				case SDL_SCANCODE_T:
-					battlefield.spawn(PLANT,PLAYER_1);
-					break;
-				case SDL_SCANCODE_G:
-					battlefield.spawn(PLANT,PLAYER_2);
-					break;
-				case SDL_SCANCODE_Y:
-					battlefield.spawn(DRAGON,PLAYER_1);
-					break;
-				case SDL_SCANCODE_H:
-					battlefield.spawn(DRAGON,PLAYER_2);
-					break;
-				case SDL_SCANCODE_U:
-					battlefield.spawn(FLOWER,PLAYER_2);
-					break;
-				case SDL_SCANCODE_J:
-					battlefield.spawn(FLOWER,PLAYER_1);
-					break;
-				case SDL_SCANCODE_O:
-					battlefield.spawn(VETERAN,PLAYER_2);
-					break;
-				case SDL_SCANCODE_L:
-					battlefield.spawn(VETERAN,PLAYER_1);
-					break;
-				default:
-					break;
-				}
-				break;
 				}
 			case SDL_QUIT:
 				quit=true;
