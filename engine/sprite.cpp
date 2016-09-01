@@ -47,7 +47,7 @@ Sprite::Sprite(SDL_Renderer* sdlRenderer, SDL_Surface *load_surf) {
 }
 
 Sprite::~Sprite() {
-	//~ free(sdlTexture);
+	SDL_DestroyTexture(sdlTexture);
 }
 
 void clear_screen(SDL_Renderer* sdlRenderer) {

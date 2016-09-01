@@ -45,11 +45,11 @@ GameScreen::GameScreen(const SpriteCollection *spr_coll,const CombinaisonCollect
 	text_p1_won=new Sprite(sdlRenderer,text_p1_won_surf);
 	text_p2_won=new Sprite(sdlRenderer,text_p2_won_surf);
 	text_key_help=new Sprite(sdlRenderer,text_key_help_surf);
-	skull=spr_coll->get_anim_cycle_iterator("skull",0.1);
-	hand=spr_coll->get_anim_cycle_iterator("hand",0.1);
 	SDL_FreeSurface(text_p1_won_surf);
 	SDL_FreeSurface(text_p2_won_surf);
 	SDL_FreeSurface(text_key_help_surf);
+	skull=spr_coll->get_anim_cycle_iterator("skull",0.1);
+	hand=spr_coll->get_anim_cycle_iterator("hand",0.1);
 
 	//~ score_id=ids[3];
 	//~ pause_id=ids[4];

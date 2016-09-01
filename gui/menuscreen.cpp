@@ -157,6 +157,7 @@ bool MenuScreen::display_menu(SDL_Renderer *sdlRenderer,SDL_Window *sdlWindow,SE
 						if(current_player==0) {
 							Options::player1keys.keys[current_menu->get_selected()->n] = event.key.keysym.scancode;
 							current_player++;
+							delete(msgSprite);
 							msgSprite = load_message(sdlRenderer, "Key "+Keys::name(Keys::KEY(current_menu->get_selected()->n))+" for player II?");
 						} else {
 							Options::player2keys.keys[current_menu->get_selected()->n] = event.key.keysym.scancode;
@@ -293,6 +294,7 @@ bool MenuScreen::display_menu(SDL_Renderer *sdlRenderer,SDL_Window *sdlWindow,SE
 		ticks=SDL_GetTicks();
 		frame_count++;
 	}
+	delete(msgSprite);
 
 	return true;
 }
