@@ -87,7 +87,7 @@ CombinaisonScreen::~CombinaisonScreen() {
 	}
 }
 
-void CombinaisonScreen::display_combinaisons(SDL_Renderer *sdlRenderer, SDL_Window *sdlWindow) {
+void CombinaisonScreen::display_combinaisons(SDL_Renderer *sdlRenderer) {
 	Uint32 ticks=SDL_GetTicks();
 	CombinaisonSprites::const_iterator current=combinaison_sprites.begin();
 

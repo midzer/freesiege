@@ -35,7 +35,7 @@ public:
 
 	GameScreen(const SpriteCollection *spr_coll,const CombinaisonCollection *cmb_coll,const std::string &ttf_path,SDL_Renderer* sdlRenderer,Background *background,MusicCollection *music_coll,GAMEMODE mode,PLAYERMODE modep1=AUTO,PLAYERMODE modep2=AUTO);
 	~GameScreen();
-	void display_game(SDL_Renderer *sdlRenderer, SDL_Window *sdlWindow);
+	void display_game(SDL_Renderer *sdlRenderer);
 
 	void set_ai_level(MenuScreen::AILEVEL ai_level);
 	void init_game();
@@ -44,7 +44,7 @@ private:
 #ifdef NET_SUPPORT
 	void handleNetwork();
 #endif
-	void show_final_screen(SDL_Renderer *sdlRenderer, SDL_Window *sdlWindow);
+	void show_final_screen(SDL_Renderer *sdlRenderer);
 
 	std::pair<PLAYERMODE,PLAYERMODE> mode_p;
 	GAMEMODE mode;

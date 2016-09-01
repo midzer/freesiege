@@ -95,13 +95,13 @@ int main(int argc, char* argv[]) {
 	std::string base_dir=get_base_dir();
 	//object init
 	CombinaisonCollection cmb_coll(base_dir+"combi.cfg");
-    std::cout<<cmb_coll<<std::endl;
-    MusicCollection music_coll(base_dir+"musics.cfg",base_dir);
-    std::cout<<music_coll<<std::endl;
+	std::cout<<cmb_coll<<std::endl;
+	MusicCollection music_coll(base_dir+"musics.cfg",base_dir);
+	std::cout<<music_coll<<std::endl;
 	SpriteCollection spr_coll(base_dir+"sprites.cfg",base_dir+"anims.cfg",base_dir,sdlRenderer);
-    std::cout<<spr_coll<<std::endl;
+	std::cout<<spr_coll<<std::endl;
 
-    const std::string font_name="Swift.ttf";
+	const std::string font_name="Swift.ttf";
 	Background background(&spr_coll);
 	GameScreen training_screen(&spr_coll,&cmb_coll,base_dir+font_name,sdlRenderer,&background,&music_coll,GameScreen::SURVIVOR);
 	GameScreen exhibition_screen(&spr_coll,&cmb_coll,base_dir+font_name,sdlRenderer,&background,&music_coll,GameScreen::VERSUS,GameScreen::AI,GameScreen::AI);
@@ -110,27 +110,27 @@ int main(int argc, char* argv[]) {
 	MenuScreen menu_screen(&spr_coll,base_dir+font_name,sdlRenderer);
 
 	//main loop
-    music_coll.play_music("intro");
+	music_coll.play_music("intro");
 	MenuScreen::SELECTION selection=MenuScreen::QUIT;
 	while (!menu_screen.display_menu(sdlRenderer, sdlWindow, selection)) {
 		if (selection==MenuScreen::TWO_PLAYERS) {
-            music_coll.play_random_music();
-			game_screen.display_game(sdlRenderer, sdlWindow);
-            music_coll.play_music("intro");
+			music_coll.play_random_music();
+			game_screen.display_game(sdlRenderer);
+			music_coll.play_music("intro");
 		} else if (selection==MenuScreen::COMBINAISONS) {
-            music_coll.play_music("combi");
-			combi_screen.display_combinaisons(sdlRenderer, sdlWindow);
-            music_coll.play_music("intro");
+			music_coll.play_music("combi");
+			combi_screen.display_combinaisons(sdlRenderer);
+			music_coll.play_music("intro");
 		} else if (selection==MenuScreen::EXHIBITION) {
-            music_coll.play_random_music();
-            exhibition_screen.set_ai_level(menu_screen.ai_level);
-			exhibition_screen.display_game(sdlRenderer, sdlWindow);
-            music_coll.play_music("intro");
+			music_coll.play_random_music();
+			exhibition_screen.set_ai_level(menu_screen.ai_level);
+			exhibition_screen.display_game(sdlRenderer);
+			music_coll.play_music("intro");
 		} else if (selection==MenuScreen::TRAINING) {
-            music_coll.play_random_music();
-            training_screen.set_ai_level(menu_screen.ai_level);
-			training_screen.display_game(sdlRenderer, sdlWindow);
-            music_coll.play_music("intro");
+			music_coll.play_random_music();
+			training_screen.set_ai_level(menu_screen.ai_level);
+			training_screen.display_game(sdlRenderer);
+			music_coll.play_music("intro");
 		} else std::cerr<<"unknown selection "<<selection<<std::endl;
 	}
 

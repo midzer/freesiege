@@ -146,7 +146,7 @@ void GameScreen::init_game() {
 	}
 }
 
-void GameScreen::display_game(SDL_Renderer *sdlRenderer, SDL_Window *sdlWindow) {
+void GameScreen::display_game(SDL_Renderer *sdlRenderer) {
 
 	bool paused=false;
 
@@ -256,11 +256,11 @@ void GameScreen::display_game(SDL_Renderer *sdlRenderer, SDL_Window *sdlWindow) 
 			}
 		}
 
-		show_final_screen(sdlRenderer, sdlWindow);
+		show_final_screen(sdlRenderer);
 	}
 }
 
-void GameScreen::show_final_screen(SDL_Renderer *sdlRenderer, SDL_Window *sdlWindow) {
+void GameScreen::show_final_screen(SDL_Renderer *sdlRenderer) {
 	SDL_Color color=FONT_COLOR;
 	int ticks = SDL_GetTicks();
 

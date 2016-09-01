@@ -25,7 +25,7 @@ class CombinaisonScreen {
 public:
 	CombinaisonScreen(const SpriteCollection *spr_coll,const CombinaisonCollection *cmb_coll,const std::string &ttf_path,SDL_Renderer* sdlRenderer);
 	~CombinaisonScreen();
-	void display_combinaisons(SDL_Renderer *sdlRenderer, SDL_Window *sdlWindow);
+	void display_combinaisons(SDL_Renderer *sdlRenderer);
 private:
 	const SpriteCollection *spr_coll;
 	typedef std::vector<const Combinaison*> Combinaisons;
