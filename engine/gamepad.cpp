@@ -16,7 +16,7 @@
 
 using namespace std;
 
-std::vector<Gamepad> Gamepad::pads;
+std::map<int,shared_ptr<Gamepad>> Gamepad::pads;
 
 Gamepad::Gamepad(int id): joyid(-1) {
 	controller = SDL_GameControllerOpen(id);
@@ -26,35 +26,77 @@ Gamepad::Gamepad(int id): joyid(-1) {
 	}
 }
 
+Gamepad::~Gamepad() {
+	if (controller) {
+		SDL_GameControllerClose(controller);
+	}
+}
+
 void Gamepad::loadGamepads()
 {
 	/* Open the first available controllers. */
-	for (int i = 0; ((i < SDL_NumJoysticks()) && (i < NB_PLAYERS)); ++i) {
-		if (SDL_IsGameController(i)) {
-			Gamepad g(i);
-			if (g.controller) {
-				pads.push_back(g);
-			} else {
-				fprintf(stderr, "Could not open gamecontroller %i: %s\n", i, SDL_GetError());
-			}
-		}
+	for (int i = 0; i < SDL_NumJoysticks(); ++i) {
+		loadGamepad(i);
 	}
+}
+
+void Gamepad::closeGamepads()
+{
+	pads.erase(pads.begin(), pads.end());
+}
+
+void Gamepad::loadGamepad(int i)
+{
+	const char *name = SDL_GameControllerNameForIndex(i);
+	if (name) {
+		printf("Opening gamepad %i (%s)\n", i, name);
+	} else {
+		printf("Opening gamepad %i\n", i);
+	}
+	if (SDL_IsGameController(i)) {
+		shared_ptr<Gamepad> g = make_shared<Gamepad>(i);
+		if (g->controller) {
+			if (pads.find(g->joyid) == pads.end()) {
+				pads[g->joyid] = g;
+			} else {
+				/* Already opened, avoid closing by destructor */
+				printf("Already opened\n", i);
+				g->controller = nullptr;
+			}
+		} else {
+			fprintf(stderr, "Could not open gamecontroller %i: %s\n", i, SDL_GetError());
+		}
+	} else {
+		fprintf(stderr, "Controller not supported or invalid %i\n", i);
+	}
+}
+
+void Gamepad::removeGamepad(int joyid)
+{
+	pads.erase(joyid);
 }
 
 Uint8 Gamepad::handleEvent(SDL_Event event, int &player)
 {
 	switch (event.type) {
 		case SDL_CONTROLLERBUTTONDOWN:
-			for(int i = 0; ((i < NB_PLAYERS) && (i < pads.size())); ++i) {
-				if (pads[i].joyid == event.cbutton.which) {
-					player = i;
-					return event.cbutton.button;
+			{
+				int i = 0;
+				for (auto& pad: pads) {
+					if (pad.first == event.cbutton.which) {
+						player = i;
+						return event.cbutton.button;
+					}
+					i++;
 				}
 			}
 			break;
+		case SDL_CONTROLLERDEVICEADDED:
+			loadGamepad(event.cdevice.which);
+			break;
+		case SDL_CONTROLLERDEVICEREMOVED:
+			removeGamepad(event.cdevice.which);
+			break;
 	}
 	return SDL_CONTROLLER_BUTTON_MAX;
-/*Gestion des évènements:
-Joystick débranché, retiré du tableau et fermé, réassigne un pad au joueur
-Joystick branché, si joueur sans pad, on assigne et on ouvre (sinon non?)*/
 }

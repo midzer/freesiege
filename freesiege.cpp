@@ -137,10 +137,13 @@ int main(int argc, char* argv[]) {
 		} else std::cerr<<"unknown selection "<<selection<<std::endl;
 	}
 
-
 	Options::save();
+
+	Gamepad::closeGamepads();
+
 	TTF_Quit();
 	IMG_Quit();
 	SDL_Quit();
+
 	return 0;
 }

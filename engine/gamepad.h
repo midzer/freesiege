@@ -15,20 +15,25 @@
 #define __GAMEPAD_H
 
 #include "config.h"
+#include <memory>
 
 class Gamepad {
 	/* Stores the gamepad for each player */
-	static std::vector<Gamepad> pads;
+	static std::map<int,std::shared_ptr<Gamepad>> pads;
 	static const int NB_PLAYERS = 2;
 
 	SDL_GameController *controller;
 	SDL_JoystickID joyid;
 	public:
 		static void loadGamepads();
+		static void loadGamepad(int i);
+		static void removeGamepad(int i);
+		static void closeGamepads();
 		/* Returns pushed button if any
 		 * Puts player id in player */
 		static Uint8 handleEvent(SDL_Event event, int &player);
 		Gamepad(int id);
+		~Gamepad();
 };
 
 #endif
