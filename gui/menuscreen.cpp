@@ -23,9 +23,8 @@
 
 #define MENUSCREEN_BASE_Y 0
 #define MENUSCREEN_BASE_X 0
-#define MENUSCREEN_FREE_FRAME_COUNT 150
-#define MENUSCREEN_SIEGE_FRAME_COUNT 300
-//~ #define MENUSCREEN_SWORD_FRAME_COUNT 55
+#define MENUSCREEN_FREE_FRAME_COUNT 125
+#define MENUSCREEN_SIEGE_FRAME_COUNT 150
 #define MENUSCREEN_DELAY 50
 
 #define D_SHIFT 0.008;
@@ -139,10 +138,8 @@ bool MenuScreen::display_menu(SDL_Renderer *sdlRenderer,SDL_Window *sdlWindow,SE
 		shift-=D_SHIFT;
 		if (shift<0) shift=0;
 
-
-		//draw_fadein(logo_sword,(SCREEN_W-logo_sword->w)/2,MENUSCREEN_BASE_Y-logo_sword->h/2-4,frame_count,MENUSCREEN_SWORD_FRAME_COUNT,30,4);
-		draw_fadein(logo_free,MENUSCREEN_BASE_X,MENUSCREEN_BASE_Y,frame_count,MENUSCREEN_FREE_FRAME_COUNT,MENUSCREEN_DELAY);
-		draw_fadein(logo_siege,SCREEN_W-logo_siege->w-MENUSCREEN_BASE_X,MENUSCREEN_BASE_Y,frame_count,MENUSCREEN_SIEGE_FRAME_COUNT,MENUSCREEN_DELAY);
+		draw_fadein(logo_free,MENUSCREEN_BASE_X,MENUSCREEN_BASE_Y,frame_count,MENUSCREEN_FREE_FRAME_COUNT,MENUSCREEN_DELAY, 0);
+		draw_fadein(logo_siege,SCREEN_W-logo_siege->w-MENUSCREEN_BASE_X,MENUSCREEN_BASE_Y,frame_count,MENUSCREEN_SIEGE_FRAME_COUNT,MENUSCREEN_DELAY, 1);
 
 		if(waiting_key) {
 			msgSprite->draw((SCREEN_W-msgSprite->w)/2,MENU_Y);

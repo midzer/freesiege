@@ -87,16 +87,19 @@ void fill_rect(SDL_Renderer* sdlRenderer,float x,float y,float w,float h,float r
 	SDL_RenderFillRect(sdlRenderer, &dstrect);
 }
 
-void draw_fadein(const Sprite *sprite,float x,float y,int count,int end,int delay,float n_turn,float angle) {
+void draw_fadein(const Sprite *sprite,float x,float y,int count,int end,int delay,int mode) {
 	if (count>end-delay && count<=end) {
 		float factor=float(count-end+delay)/(delay+1);
-		sprite->draw(x,y,factor,angle+360*n_turn*(1-factor),factor);
-	} else if (count>end) sprite->draw(x,y,1.0,angle);
+		sprite->draw(x-((end-count)*10*(1-mode)),y-((end-count)*10*mode),factor,0,1);
+	} else if (count>end) {
+		sprite->draw(x,y,1.0,0);
+	}
 }
 
 void draw_fadeout(const Sprite *sprite,float x,float y,int count,int end,int delay,float n_turn,float angle) {
-	if (count<=end-delay) sprite->draw(x,y,1.0,angle);
-	else if (count<=end) {
+	if (count<=end-delay) {
+		sprite->draw(x,y,1.0,angle);
+	} else if (count<=end) {
 		float factor=1-float(count-end+delay)/(delay+1);
 		sprite->draw(x,y,factor,angle+360*n_turn*factor,factor);
 	}

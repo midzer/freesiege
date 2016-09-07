@@ -39,7 +39,7 @@ SDL_Surface *create_surface(int width,int height);
 
 void clear_screen(SDL_Renderer* sdlRenderer);
 void fill_rect(SDL_Renderer* sdlRenderer,float x,float y,float w,float h,float r,float g,float b,float alpha=1.0);
-void draw_fadein(const Sprite *sprite,float x,float y,int count,int end,int delay,float n_turn=0.0,float angle=0.0);
+void draw_fadein(const Sprite *sprite,float x,float y,int count,int end,int delay,int mode);
 void draw_fadeout(const Sprite *sprite,float x,float y,int count,int end,int delay,float n_turn=0.0,float angle=0.0);
 
 #endif
