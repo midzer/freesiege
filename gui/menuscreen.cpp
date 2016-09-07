@@ -19,6 +19,7 @@
 
 #include "param.h"
 #include "options.h"
+#include "gamepad.h"
 
 #define MENUSCREEN_BASE_Y 0
 #define MENUSCREEN_BASE_X 0
@@ -167,7 +168,7 @@ bool MenuScreen::display_menu(SDL_Renderer *sdlRenderer,SDL_Window *sdlWindow,SE
 							menus.pop();
 							menus.push(key_menu);
 						}
-					} else
+					} else {
 						switch (event.key.keysym.scancode) {
 							case SDL_SCANCODE_ESCAPE:
 								if (!menus.empty()) menus.pop();
@@ -178,98 +179,8 @@ bool MenuScreen::display_menu(SDL_Renderer *sdlRenderer,SDL_Window *sdlWindow,SE
 								break;
 							case SDL_SCANCODE_RETURN:
 							case SDL_SCANCODE_SPACE:
-								if (current_menu==main_menu) {
-									switch (current_menu->get_selected()->n) {
-									case 0://2 players versus
-										selection=TWO_PLAYERS;
-										return false;
-										break;
-									case 1://training mode
-										selection=TRAINING;
-										return false;
-										break;
-									case 2://combinaisons
-										selection=EXHIBITION;
-										return false;
-										break;
-									case 3://combinaisons
-										selection=COMBINAISONS;
-										return false;
-										break;
-									case 4://options
-										menus.push(option_menu);
-										break;
-									case 5://quit
-										selection=QUIT;
-										return true;
-										break;
-									default:
-										break;
-									}
-								} else if (current_menu==option_menu) {
-									switch (current_menu->get_selected()->n) {
-									case 0://ai level
-										switch (ai_level) {
-										  case EASY:
-											ai_level=NORMAL;
-											current_menu->get_selected()->title="AI Level: Knight";
-											break;
-										  case NORMAL:
-											ai_level=HARD;
-											current_menu->get_selected()->title="AI Level: Galaad the Righteous";
-											break;
-										  case HARD:
-											ai_level=EXTREME;
-											current_menu->get_selected()->title="AI Level: Morgoth the Cruel";
-											break;
-										  case EXTREME:
-											ai_level=EASY;
-											current_menu->get_selected()->title="AI Level: Farmer";
-											break; }
-										break;
-									case 1://keys
-										menus.push(key_menu);
-										break;
-									case 2://Sound
-										if (!Options::soundOn())
-										{
-											Mix_ResumeMusic();
-											Options::setSound(true);
-											current_menu->get_selected()->title="Sound: on";
-										}
-										else
-										{
-											Mix_PauseMusic();
-											Options::setSound(false);
-											current_menu->get_selected()->title="Sound: off";
-										}
-										break;
-									case 3://Fullscreen
-										if (!Options::fullscreenOn())
-										{
-											SDL_SetWindowFullscreen(sdlWindow, SDL_WINDOW_FULLSCREEN_DESKTOP);
-											std::cout << "fullscreen" << std::endl;
-											Options::setFullscreen(true);
-											current_menu->get_selected()->title="Fullscreen";
-										}
-										else
-										{
-											SDL_SetWindowFullscreen(sdlWindow, 0);
-											std::cout << "nofullscreen" << std::endl;
-											Options::setFullscreen(false);
-											current_menu->get_selected()->title="Windowed";
-										}
-										break;
-									case 4://return
-										menus.pop();
-										break;
-									default:
-										break;
-									}
-								} else if (current_menu==key_menu) {
-									waiting_key = true;
-									delete(msgSprite);
-									msgSprite = load_message(sdlRenderer, "Key "+Keys::name(Keys::KEY(current_menu->get_selected()->n))+" for player I ?");
+								if (handle_action(sdlRenderer,sdlWindow, current_menu, selection, waiting_key, msgSprite)) {
+									return (selection == QUIT);
 								}
 								break;
 							case SDL_SCANCODE_UP:
@@ -281,6 +192,35 @@ bool MenuScreen::display_menu(SDL_Renderer *sdlRenderer,SDL_Window *sdlWindow,SE
 							default:
 								break;
 						}
+					}
+					break;
+				case SDL_CONTROLLERDEVICEADDED:
+				case SDL_CONTROLLERDEVICEREMOVED:
+				case SDL_CONTROLLERAXISMOTION:
+				case SDL_CONTROLLERBUTTONDOWN:
+				case SDL_CONTROLLERBUTTONUP:
+					int player;
+					switch(Gamepad::handleEvent(event, player)) {
+						case SDL_CONTROLLER_BUTTON_DPAD_UP:
+							current_menu->previous();
+							break;
+						case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
+							current_menu->next();
+							break;
+						case SDL_CONTROLLER_BUTTON_A:
+							if (handle_action(sdlRenderer,sdlWindow, current_menu, selection, waiting_key, msgSprite)) {
+								return (selection == QUIT);
+							}
+							break;
+						case SDL_CONTROLLER_BUTTON_B:
+							if (!menus.empty()) menus.pop();
+							if (menus.empty()) {
+								selection=QUIT;
+								return true;
+							}
+							break;
+						//~ todo: trouver comment appeler le même code que pour les interactions clavier (à priori suffit de passer en fonctions)
+					}
 					break;
 				case SDL_QUIT:
 					return true;
@@ -297,4 +237,97 @@ bool MenuScreen::display_menu(SDL_Renderer *sdlRenderer,SDL_Window *sdlWindow,SE
 	delete(msgSprite);
 
 	return true;
+}
+
+bool MenuScreen::handle_action (SDL_Renderer *sdlRenderer, SDL_Window *sdlWindow, Menu *current_menu, SELECTION &selection, bool &waiting_key, Sprite* &msgSprite)
+{
+	if (current_menu==main_menu) {
+		switch (current_menu->get_selected()->n) {
+			case 0://2 players versus
+				selection=TWO_PLAYERS;
+				return true;
+				break;
+			case 1://training mode
+				selection=TRAINING;
+				return true;
+				break;
+			case 2://combinaisons
+				selection=EXHIBITION;
+				return true;
+				break;
+			case 3://combinaisons
+				selection=COMBINAISONS;
+				return true;
+				break;
+			case 4://options
+				menus.push(option_menu);
+				break;
+			case 5://quit
+				selection=QUIT;
+				return true;
+				break;
+			default:
+				break;
+		}
+	} else if (current_menu==option_menu) {
+		switch (current_menu->get_selected()->n) {
+			case 0://ai level
+				switch (ai_level) {
+					case EASY:
+						ai_level=NORMAL;
+						current_menu->get_selected()->title="AI Level: Knight";
+						break;
+					case NORMAL:
+						ai_level=HARD;
+						current_menu->get_selected()->title="AI Level: Galaad the Righteous";
+						break;
+					case HARD:
+						ai_level=EXTREME;
+						current_menu->get_selected()->title="AI Level: Morgoth the Cruel";
+						break;
+					case EXTREME:
+						ai_level=EASY;
+						current_menu->get_selected()->title="AI Level: Farmer";
+						break;
+				}
+				break;
+			case 1://keys
+				menus.push(key_menu);
+				break;
+			case 2://Sound
+				if (Options::soundOn())
+				{
+					Mix_PauseMusic();
+					Options::setSound(false);
+					current_menu->get_selected()->title="Sound: off";
+				} else {
+					Mix_ResumeMusic();
+					Options::setSound(true);
+					current_menu->get_selected()->title="Sound: on";
+				}
+				break;
+			case 3://Fullscreen
+				if (Options::fullscreenOn())
+				{
+					SDL_SetWindowFullscreen(sdlWindow, 0);
+					Options::setFullscreen(false);
+					current_menu->get_selected()->title="Windowed";
+				} else {
+					SDL_SetWindowFullscreen(sdlWindow, SDL_WINDOW_FULLSCREEN_DESKTOP);
+					Options::setFullscreen(true);
+					current_menu->get_selected()->title="Fullscreen";
+				}
+				break;
+			case 4://return
+				menus.pop();
+				break;
+			default:
+				break;
+		}
+	} else if (current_menu==key_menu) {
+		waiting_key = true;
+		delete(msgSprite);
+		msgSprite = load_message(sdlRenderer, "Key "+Keys::name(Keys::KEY(current_menu->get_selected()->n))+" for player I ?");
+	}
+	return false;
 }

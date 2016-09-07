@@ -34,6 +34,7 @@ public:
 private:
 	Sprite* load_message(SDL_Renderer* sdlRenderer,std::string msg);
 	void refresh_key_menu(SDL_Renderer *sdlRenderer);
+	bool handle_action(SDL_Renderer *sdlRenderer, SDL_Window *sdlWindow, Menu *current_menu,SELECTION &selection, bool &waiting_key, Sprite* &msgSprite);
 
 	const SpriteCollection *spr_coll;
 	std::string ttf_path;

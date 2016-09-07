@@ -9,4 +9,5 @@ SET(FS_ENGINE_SRCS
     engine/message.cpp
     engine/collisionmatrix.cpp
     engine/musiccollection.cpp
+    engine/gamepad.cpp
 )

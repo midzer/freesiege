@@ -23,6 +23,7 @@
 #include "combinaisonscreen.h"
 #include "musiccollection.h"
 #include "options.h"
+#include "gamepad.h"
 
 
 SDL_Window *sdlWindow;
@@ -59,7 +60,7 @@ int main(int argc, char* argv[]) {
 	init_random_gen();
 
 	//SDL init;
-	if (SDL_Init(SDL_INIT_AUDIO|SDL_INIT_VIDEO|SDL_INIT_TIMER)==-1) {
+	if (SDL_Init(SDL_INIT_AUDIO|SDL_INIT_VIDEO|SDL_INIT_TIMER|SDL_INIT_GAMECONTROLLER)==-1) {
 		std::cerr<<"sdl init failed..."<<SDL_GetError()<<std::endl;
 		return 1;
 	}
@@ -91,6 +92,8 @@ int main(int argc, char* argv[]) {
 			Options::setSoundSession(false);
 		}
 	}
+
+	Gamepad::loadGamepads();
 
 	std::string base_dir=get_base_dir();
 	//object init
