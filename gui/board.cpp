@@ -18,6 +18,7 @@
 #include "board.h"
 #include "param.h"
 #include "options.h"
+#include "gamepad.h"
 
 Board::Board(const SpriteCollection *spr_coll,const CombinaisonCollection *com_coll,BattleField *field,PLAYER player) : BoardAbstract(spr_coll,com_coll,field,player) {
 	//init player key context
@@ -43,12 +44,31 @@ Board::Board(const SpriteCollection *spr_coll,const CombinaisonCollection *com_c
 void Board::logic(bool flowers) {
 	const Uint8 *key=SDL_GetKeyboardState(NULL);
 
-	if (!this->cursor_changed) {
-		if (key[key_left]) this->cursor_j--;
-		else if (key[key_right]) this->cursor_j++;
-		if (key[key_up]) this->cursor_i--;
-		else if (key[key_down]) this->cursor_i++;
-		this->cursor_changed=key[key_left] || key[key_right] || key[key_down] || key[key_up];
+	if (this->cursor_changed) {
+		if (!(
+			key[key_left] || key[key_right] || key[key_down] || key[key_up]
+			|| Gamepad::state(player-1, SDL_CONTROLLER_BUTTON_DPAD_LEFT)
+			|| Gamepad::state(player-1, SDL_CONTROLLER_BUTTON_DPAD_RIGHT)
+			|| Gamepad::state(player-1, SDL_CONTROLLER_BUTTON_DPAD_UP)
+			|| Gamepad::state(player-1, SDL_CONTROLLER_BUTTON_DPAD_DOWN)
+			)) {
+			this->cursor_changed = false;
+		}
+	} else {
+		if (key[key_left] || Gamepad::state(player-1, SDL_CONTROLLER_BUTTON_DPAD_LEFT)) {
+			this->cursor_j--;
+			this->cursor_changed = true;
+		} else if (key[key_right] || Gamepad::state(player-1, SDL_CONTROLLER_BUTTON_DPAD_RIGHT)) {
+			this->cursor_j++;
+			this->cursor_changed = true;
+		}
+		if (key[key_up] || Gamepad::state(player-1, SDL_CONTROLLER_BUTTON_DPAD_UP)) {
+			this->cursor_i--;
+			this->cursor_changed = true;
+		} else if (key[key_down] || Gamepad::state(player-1, SDL_CONTROLLER_BUTTON_DPAD_DOWN)) {
+			this->cursor_i++;
+			this->cursor_changed = true;
+		}
 	}
 
 	if (this->cursor_i>=BOARD_H) this->cursor_i=0;
@@ -58,55 +78,55 @@ void Board::logic(bool flowers) {
 
 	char dummy;
 
-	switch (this->state) {
-		case IDLE:
-			if (key[key_select] && !this->state_changed) {
-				this->select_i=this->cursor_i;
-				this->select_j=this->cursor_j;
-				this->state=SELECTED;
-				this->state_changed=true;
-			} else if (key[key_validate] && !this->state_changed) {
-				this->state=VALIDATE;
-				this->state_changed=true;
-			}
-			break;
-		case SELECTED:
-			if (key[key_swap] && !this->state_changed) {
-				dummy=this->board[cursor_i][cursor_j];
-				this->board[cursor_i][cursor_j]=this->board[select_i][select_j];
-				this->board[select_i][select_j]=dummy;
-				compute();
-				this->state=IDLE;
-				this->state_changed=true;
-			} else if (key[key_select] && !this->state_changed) {
-				this->select_i=this->cursor_i;
-				this->select_j=this->cursor_j;
-				this->state=SELECTED;
-				this->state_changed=true;
-			} else if (key[key_validate] && !this->state_changed) {
-				this->state=VALIDATE;
-				this->state_changed=true;
-			}
-			break;
-		case VALIDATE:
-			if (!this->state_changed) {
+	if (this->state_changed) {
+		if (!(
+			key[key_select] || key[key_swap] || key[key_validate]
+			|| Gamepad::state(player-1, SDL_CONTROLLER_BUTTON_A)
+			|| Gamepad::state(player-1, SDL_CONTROLLER_BUTTON_B)
+			)) {
+			this->state_changed = false;
+		}
+	} else {
+		switch (this->state) {
+			case IDLE:
+				if (key[key_select] || Gamepad::state(player-1, SDL_CONTROLLER_BUTTON_A)) {
+					this->select_i=this->cursor_i;
+					this->select_j=this->cursor_j;
+					this->state=SELECTED;
+					this->state_changed=true;
+				} else if (key[key_validate] || Gamepad::state(player-1, SDL_CONTROLLER_BUTTON_B)) {
+					this->state=VALIDATE;
+					this->state_changed=true;
+				}
+				break;
+			case SELECTED:
+				if (key[key_swap] || Gamepad::state(player-1, SDL_CONTROLLER_BUTTON_A)) {
+					dummy=this->board[cursor_i][cursor_j];
+					this->board[cursor_i][cursor_j]=this->board[select_i][select_j];
+					this->board[select_i][select_j]=dummy;
+					compute();
+					this->state=IDLE;
+					this->state_changed=true;
+				} else if (key[key_select] || Gamepad::state(player-1, SDL_CONTROLLER_BUTTON_A)) {
+					this->select_i=this->cursor_i;
+					this->select_j=this->cursor_j;
+					this->state=SELECTED;
+					this->state_changed=true;
+				} else if (key[key_validate] || Gamepad::state(player-1, SDL_CONTROLLER_BUTTON_B)) {
+					this->state=VALIDATE;
+					this->state_changed=true;
+				}
+				break;
+			case VALIDATE:
 				validate();
 				this->state=IDLE;
 				this->state_changed=true;
-			}
-			break;
-		default:
-			std::cerr<<"unknown state: "<<this->state<<std::endl;
-			break;
+				break;
+			default:
+				std::cerr<<"unknown state: "<<this->state<<std::endl;
+				break;
+		}
 	}
-}
-
-void Board::draw() {
-	BoardAbstract::draw();
-
-	const Uint8 *key=SDL_GetKeyboardState(NULL);
-	this->state_changed=this->state_changed && (key[key_select] || key[key_swap] || key[key_validate]); //reset state changed
-	this->cursor_changed=this->cursor_changed && (key[key_left] || key[key_right] || key[key_down] || key[key_up]); //reset cursor changed
 }
 
 Board::~Board() {}

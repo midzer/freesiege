@@ -27,7 +27,6 @@ public:
 	Board(const SpriteCollection *spr_coll,const CombinaisonCollection *com_coll,BattleField *field,PLAYER player);
 	~Board();
 	void logic(bool flowers);
-	virtual void draw();
 
 protected:
 	SDL_Scancode key_select;

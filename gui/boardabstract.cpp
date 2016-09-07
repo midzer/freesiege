@@ -31,10 +31,10 @@ BoardAbstract::BoardAbstract(const SpriteCollection *spr_coll,const CombinaisonC
 	this->bit_fire=spr_coll->get_sprite("fire");
 	this->bit_cursor=spr_coll->get_sprite("cursor");
 	this->frame=spr_coll->get_sprite("frame");
-	
+
 	//init combinaisons stuff
 	this->com_coll=com_coll;
-	
+
 	newGame(field);
 }
 
@@ -58,20 +58,20 @@ void BoardAbstract::newGame(BattleField *field) {
 			}
 		}
 	}
-	
+
 	//init board stuff
 	this->cursor_i=0;
 	this->cursor_j=0;
 	this->select_i=-1;
 	this->select_j=-1;
 	this->state=IDLE;
-	this->state_changed=false;
-	this->cursor_changed=false;
-	
+	this->state_changed=true;
+	this->cursor_changed=true;
+
 	//init battle field stuff
 	this->field=field;
 	compute();
-	
+
 }
 
 void BoardAbstract::compute() {
@@ -132,7 +132,7 @@ void BoardAbstract::draw_background(float offset) {
 		}
 		y+=ELEM_H+SPACING;
 	}
-	
+
 	//draw matched sprite
 	Combinaison *combi;
 	for (CombinaisonCollection::Coll::const_iterator iter=matched.begin(); iter!=matched.end(); iter++) {
@@ -192,7 +192,7 @@ void BoardAbstract::validate() {
 				}
 			}
 		}
-		
+
 		//put board up to date
 		compute();
 	} //else std::cout<<"nothing to validate for player"<<player<<" ..."<<std::endl;
@@ -200,11 +200,11 @@ void BoardAbstract::validate() {
 
 BoardAbstract::~BoardAbstract() {}
 
-void BoardAbstract::draw() {	
+void BoardAbstract::draw() {
 	int offset;
 	if (player==PLAYER_1) offset=BOARD_BORDER;
 	else offset=SCREEN_W-BOARD_W*(ELEM_H+SPACING)-BOARD_BORDER;
-	
+
 	draw_background(offset);
 	bit_cursor->draw(offset+this->cursor_j*(ELEM_W+SPACING),BOARD_BORDER+this->cursor_i*(ELEM_H+SPACING));
 	if (this->state==SELECTED) bit_cursor->draw(offset+this->select_j*(ELEM_W+SPACING),BOARD_BORDER+this->select_i*(ELEM_H+SPACING));

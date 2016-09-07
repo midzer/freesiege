@@ -76,6 +76,18 @@ void Gamepad::removeGamepad(int joyid)
 	pads.erase(joyid);
 }
 
+Uint8 Gamepad::state(int player, SDL_GameControllerButton button)
+{
+	auto it = pads.begin();
+	while (player--) {
+		it++;
+	}
+	if (it == pads.end()) {
+		return 0;
+	}
+	return SDL_GameControllerGetButton(it->second->controller, button);
+}
+
 Uint8 Gamepad::handleEvent(SDL_Event event, int &player)
 {
 	switch (event.type) {

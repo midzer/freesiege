@@ -29,6 +29,7 @@ class Gamepad {
 		static void loadGamepad(int i);
 		static void removeGamepad(int i);
 		static void closeGamepads();
+		static Uint8 state(int player, SDL_GameControllerButton button);
 		/* Returns pushed button if any
 		 * Puts player id in player */
 		static Uint8 handleEvent(SDL_Event event, int &player);

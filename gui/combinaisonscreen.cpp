@@ -18,6 +18,7 @@
 #include "combinaisonscreen.h"
 #include "board.h"
 #include "param.h"
+#include "gamepad.h"
 
 #define COMBI_NAME_NORMAL_H 36
 #define COMBI_NAME_SELECTED_H 50
@@ -177,13 +178,37 @@ void CombinaisonScreen::display_combinaisons(SDL_Renderer *sdlRenderer) {
 					current++;
 					if (current==combinaison_sprites.end()) current=combinaison_sprites.begin();
 					break;
-				case SDL_SCANCODE_RETURN://FIXME debug
-					std::cout<<current->second->combinaisons.size()<<" "<<*current_combinaison<<std::endl;
-					break;
+				//~ case SDL_SCANCODE_RETURN://FIXME debug
+					//~ std::cout<<current->second->combinaisons.size()<<" "<<*current_combinaison<<std::endl;
+					//~ break;
 				case SDL_SCANCODE_ESCAPE:
 					return;
 				default:
 					break;
+				}
+				break;
+			case SDL_CONTROLLERDEVICEADDED:
+			case SDL_CONTROLLERDEVICEREMOVED:
+			case SDL_CONTROLLERAXISMOTION:
+			case SDL_CONTROLLERBUTTONDOWN:
+			case SDL_CONTROLLERBUTTONUP:
+				int player;
+				switch(Gamepad::handleEvent(event, player)) {
+					case SDL_CONTROLLER_BUTTON_A:
+						frame_count=0;
+						current->second->current_combinaison++;
+						if (current->second->current_combinaison==current->second->combinaisons.end()) current->second->current_combinaison=current->second->combinaisons.begin();
+						break;
+					case SDL_CONTROLLER_BUTTON_DPAD_UP:
+						if (current==combinaison_sprites.begin()) current=combinaison_sprites.end();
+						current--;
+						break;
+					case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
+					current++;
+					if (current==combinaison_sprites.end()) current=combinaison_sprites.begin();
+						break;
+					case SDL_CONTROLLER_BUTTON_B:
+						return;
 				}
 				break;
 			case SDL_QUIT:

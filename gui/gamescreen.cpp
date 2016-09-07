@@ -23,6 +23,7 @@
 #include "utils.h"
 #include "param.h"
 #include "options.h"
+#include "gamepad.h"
 
 #define FONT_COLOR { 0x77, 0xd1, 0x00, 0 }
 #define SURVIVAL_TIME 3000
@@ -205,19 +206,31 @@ void GameScreen::display_game(SDL_Renderer *sdlRenderer) {
 
 			while (SDL_PollEvent(&event)) {
 				switch (event.type) {
-				case SDL_KEYDOWN:
-					if (event.key.keysym.scancode==SDL_SCANCODE_ESCAPE) quit_game=true;
-#ifdef DEBUG_MODE
-					else if (event.key.keysym.scancode==SDL_SCANCODE_t) life_bars.second->damage(100); //DEBUG
-					else if (event.key.keysym.scancode==SDL_SCANCODE_y) life_bars.first->damage(100);
-#endif
-					else if (event.key.keysym.scancode==Options::pause_key) paused=!paused;
-					break;
-				case SDL_QUIT:
-					quit_game=true;
-					break;
-				default:
-					break;
+					case SDL_KEYDOWN:
+						if (event.key.keysym.scancode==SDL_SCANCODE_ESCAPE) quit_game=true;
+	#ifdef DEBUG_MODE
+						else if (event.key.keysym.scancode==SDL_SCANCODE_T) life_bars.second->damage(100); //DEBUG
+						else if (event.key.keysym.scancode==SDL_SCANCODE_Y) life_bars.first->damage(100);
+	#endif
+						else if (event.key.keysym.scancode==Options::pause_key) paused=!paused;
+						break;
+					case SDL_CONTROLLERDEVICEADDED:
+					case SDL_CONTROLLERDEVICEREMOVED:
+					case SDL_CONTROLLERAXISMOTION:
+					case SDL_CONTROLLERBUTTONDOWN:
+					case SDL_CONTROLLERBUTTONUP:
+						int player;
+						switch(Gamepad::handleEvent(event, player)) {
+							case SDL_CONTROLLER_BUTTON_START:
+								paused = !paused;
+								break;
+						}
+						break;
+					case SDL_QUIT:
+						quit_game=true;
+						break;
+					default:
+						break;
 				}
 			}
 
@@ -377,15 +390,30 @@ void GameScreen::show_final_screen(SDL_Renderer *sdlRenderer) {
 		SDL_Event event;
 		while (SDL_PollEvent(&event)) {
 			switch (event.type) {
-			case SDL_KEYDOWN:
-				if (event.key.keysym.scancode==SDL_SCANCODE_ESCAPE) quit_game=true; //quit game
-				if (event.key.keysym.scancode==SDL_SCANCODE_SPACE) quit=true;
-				break;
-			case SDL_QUIT:
-				quit_game=true;
-				break;
-			default:
-				break;
+				case SDL_KEYDOWN:
+					if (event.key.keysym.scancode==SDL_SCANCODE_ESCAPE) quit_game=true; //quit game
+					if (event.key.keysym.scancode==SDL_SCANCODE_SPACE) quit=true;
+					break;
+				case SDL_CONTROLLERDEVICEADDED:
+				case SDL_CONTROLLERDEVICEREMOVED:
+				case SDL_CONTROLLERAXISMOTION:
+				case SDL_CONTROLLERBUTTONDOWN:
+				case SDL_CONTROLLERBUTTONUP:
+					int player;
+					switch(Gamepad::handleEvent(event, player)) {
+						case SDL_CONTROLLER_BUTTON_A:
+							quit = true;
+							break;
+						case SDL_CONTROLLER_BUTTON_B:
+							quit_game = true;
+							break;
+					}
+					break;
+				case SDL_QUIT:
+					quit_game=true;
+					break;
+				default:
+					break;
 			}
 		}
 
