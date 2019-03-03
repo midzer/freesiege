@@ -99,12 +99,11 @@ MenuScreen::~MenuScreen() {
 	}
 }
 
-Sprite* MenuScreen::load_message(SDL_Renderer* sdlRenderer,string msg) {
+Sprite* MenuScreen::load_message(SDL_Renderer* sdlRenderer, string msg) {
 	SDL_Color normal_color=MENU_NORMAL_COLOR;
 	SDL_Surface *normal_surf;
 	normal_surf=TTF_RenderText_Solid(normal_font,msg.c_str(),normal_color);
-	Sprite* msgSprite = new Sprite(sdlRenderer,normal_surf);
-	return msgSprite;
+	return new Sprite(sdlRenderer,normal_surf);
 }
 
 bool MenuScreen::display_menu(SDL_Renderer *sdlRenderer,SDL_Window *sdlWindow,SELECTION &selection) {
@@ -120,7 +119,7 @@ bool MenuScreen::display_menu(SDL_Renderer *sdlRenderer,SDL_Window *sdlWindow,SE
 	const Sprite *back_castle=spr_coll->get_sprite("title_castle");
 	const Sprite *back_sky=spr_coll->get_sprite("title_sky");
 
-	Sprite* msgSprite = nullptr; // FIXME leak, use uniq_ptr or something
+	unique_ptr<Sprite> msgSprite = nullptr;
 
 	SDL_Event event;
 	float shift=1.0;
@@ -141,7 +140,7 @@ bool MenuScreen::display_menu(SDL_Renderer *sdlRenderer,SDL_Window *sdlWindow,SE
 		draw_fadein(logo_free,MENUSCREEN_BASE_X,MENUSCREEN_BASE_Y,frame_count,MENUSCREEN_FREE_FRAME_COUNT,MENUSCREEN_DELAY, 0);
 		draw_fadein(logo_siege,SCREEN_W-logo_siege->w-MENUSCREEN_BASE_X,MENUSCREEN_BASE_Y,frame_count,MENUSCREEN_SIEGE_FRAME_COUNT,MENUSCREEN_DELAY, 1);
 
-		if(waiting_key) {
+		if(waiting_key && msgSprite) {
 			msgSprite->draw((SCREEN_W-msgSprite->w)/2,MENU_Y);
 		} else {
 			current_menu->draw(sdlRenderer);
@@ -155,8 +154,7 @@ bool MenuScreen::display_menu(SDL_Renderer *sdlRenderer,SDL_Window *sdlWindow,SE
 						if(current_player==0) {
 							Options::player1keys.keys[current_menu->get_selected()->n] = event.key.keysym.scancode;
 							current_player++;
-							delete(msgSprite);
-							msgSprite = load_message(sdlRenderer, "Key "+Keys::name(Keys::KEY(current_menu->get_selected()->n))+" for player II?");
+							msgSprite.reset(load_message(sdlRenderer, "Key "+Keys::name(Keys::KEY(current_menu->get_selected()->n))+" for player II?"));
 						} else {
 							Options::player2keys.keys[current_menu->get_selected()->n] = event.key.keysym.scancode;
 							current_player=0;
@@ -231,12 +229,11 @@ bool MenuScreen::display_menu(SDL_Renderer *sdlRenderer,SDL_Window *sdlWindow,SE
 		ticks=SDL_GetTicks();
 		frame_count++;
 	}
-	delete(msgSprite);
 
 	return true;
 }
 
-bool MenuScreen::handle_action (SDL_Renderer *sdlRenderer, SDL_Window *sdlWindow, Menu *current_menu, SELECTION &selection, bool &waiting_key, Sprite* &msgSprite)
+bool MenuScreen::handle_action (SDL_Renderer *sdlRenderer, SDL_Window *sdlWindow, Menu *current_menu, SELECTION &selection, bool &waiting_key, unique_ptr<Sprite> &msgSprite)
 {
 	if (current_menu==main_menu) {
 		switch (current_menu->get_selected()->n) {
@@ -323,8 +320,7 @@ bool MenuScreen::handle_action (SDL_Renderer *sdlRenderer, SDL_Window *sdlWindow
 		}
 	} else if (current_menu==key_menu) {
 		waiting_key = true;
-		delete(msgSprite);
-		msgSprite = load_message(sdlRenderer, "Key "+Keys::name(Keys::KEY(current_menu->get_selected()->n))+" for player I ?");
+		msgSprite.reset(load_message(sdlRenderer, "Key "+Keys::name(Keys::KEY(current_menu->get_selected()->n))+" for player I ?"));
 	}
 	return false;
 }
