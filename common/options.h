@@ -40,6 +40,7 @@ class Keys {
 				case UP: return "up";
 				case NBKEYS: return "number of keys";
 			}
+			return "";
 		}
 };
 
