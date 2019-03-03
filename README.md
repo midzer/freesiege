@@ -91,4 +91,4 @@ FreeSiege source code is distributed under the GNU General Public License, versi
 (at your option) any later version (GPL-3.0+).
 See the AUTHORS file for credits and licenses of data.
 
-For more information, feedback or feature request about the game, go to <http://github.com/MCMic/freesiege>
+For more information, feedback or feature request about the game, go to <https://gitlab.com/LibreGames/freesiege>
