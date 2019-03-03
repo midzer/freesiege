@@ -79,8 +79,8 @@ void Gamepad::removeGamepad(int joyid)
 Uint8 Gamepad::state(int player, SDL_GameControllerButton button)
 {
 	auto it = pads.begin();
-	while (player--) {
-		it++;
+	while ((player-- > 0) && (it != pads.end())) {
+		++it;
 	}
 	if (it == pads.end()) {
 		return 0;
