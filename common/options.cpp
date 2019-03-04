@@ -67,7 +67,7 @@ void Options::save() {
 		}
 		file << "pause :" << pause_key << endl;
 	} else {
-		cout << "impossible de sauvegarder le fichier de config (chemin : " << filename << ")" << endl;
+		cout << "Failed to save config file (path: " << filename << ")" << endl;
 	}
 }
 
@@ -102,9 +102,9 @@ void Options::load() {
 		if(file.eof())
 			pause_key = SDL_SCANCODE_SPACE;
 
-		cout << "d'après le fichier de config, sound =" << soundConfig << " et fullscreen =" << fullscreenConfig << endl;
+		cout << "From config file, sound =" << soundConfig << " and fullscreen =" << fullscreenConfig << endl;
 	} else {
-		cout << "fichier de config \"" << config_file() << "\" inexistant, configuration par défaut appliquée" << endl;
+		cout << "Config file \"" << config_file() << "\" does not exists, default configuration applied" << endl;
 		soundConfig = true;
 		fullscreenConfig = false;
 	}
