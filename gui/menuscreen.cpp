@@ -214,7 +214,6 @@ bool MenuScreen::display_menu(SDL_Renderer *sdlRenderer,SDL_Window *sdlWindow,SE
 								return true;
 							}
 							break;
-						//~ todo: trouver comment appeler le même code que pour les interactions clavier (à priori suffit de passer en fonctions)
 					}
 					break;
 				case SDL_QUIT:
