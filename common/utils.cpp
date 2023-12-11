@@ -84,7 +84,7 @@ void init_random_gen() {
 	srand((unsigned int)time( NULL ));
 }
 
-#ifdef WIN32
+#ifdef __EMSCRIPTEN__
 std::string get_base_dir() {
 	return std::string("./");
 }
